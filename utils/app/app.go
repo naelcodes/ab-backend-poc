@@ -21,7 +21,7 @@ func NewRouter() RouterCreator {
 	return app.Group
 }
 
-func Initialise() (app *App) {
+func Initialise() *App {
 	app.Use(getCors())
 	return app
 }
