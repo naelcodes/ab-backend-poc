@@ -6,21 +6,22 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
+	"neema.co.za/rest/app"
 	"neema.co.za/rest/service"
 )
 
 type UserHandler struct {
-	userService   *service.UserService
-	RouterCreator func(prefix string, handlers ...fiber.Handler) fiber.Router
+	*service.UserService
+	app.RouterCreator
 }
 
-func NewUserHandler(userService *service.UserService, RouterCreator func(prefix string, handlers ...fiber.Handler) fiber.Router) *UserHandler {
-	return &UserHandler{userService, RouterCreator}
+func NewUserHandler(userService *service.UserService, routerCreator app.RouterCreator) *UserHandler {
+	return &UserHandler{userService, routerCreator}
 }
 
 func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
-	user, err := h.userService.GetUserByID(id)
+	user, err := h.UserService.GetUserByID(id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Error fetching user"})
 	}

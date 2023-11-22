@@ -2,16 +2,15 @@
 package repository
 
 import (
-	"github.com/go-xorm/xorm"
-
+	"neema.co.za/rest/database"
 	"neema.co.za/rest/models"
 )
 
 type UserRepository struct {
-	db *xorm.Engine
+	db *database.Database
 }
 
-func NewUserRepository(db *xorm.Engine) *UserRepository {
+func NewUserRepository(db *database.Database) *UserRepository {
 	return &UserRepository{db: db}
 }
 
