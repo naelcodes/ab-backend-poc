@@ -1,4 +1,4 @@
-// models/user.go
+// models/index.go
 package models
 
 type User struct {

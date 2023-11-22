@@ -8,7 +8,6 @@ import (
 	"sync"
 
 	"github.com/go-xorm/xorm"
-	_ "github.com/lib/pq"
 )
 
 type Database struct {

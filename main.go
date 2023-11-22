@@ -4,15 +4,18 @@ package main
 import (
 	"log"
 
-	App "neema.co.za/rest/app"
+	"neema.co.za/rest/ioc"
+	userModule "neema.co.za/rest/modules/user"
+	App "neema.co.za/rest/utils/app"
 )
 
 func main() {
 
 	app := App.Initialise()
 
-	injectUserModule().Start()
+	defer func() { // Start the Fiber app
+		log.Fatal(app.Listen(":8080"))
+	}()
 
-	// Start the Fiber app
-	log.Fatal(app.Listen(":8080"))
+	userModule.Start(ioc.InjectUserModule())
 }

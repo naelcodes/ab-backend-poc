@@ -6,7 +6,7 @@ import (
 )
 
 type RouterCreator func(prefix string, handlers ...fiber.Handler) fiber.Router
-
+type Router fiber.Router
 type App struct {
 	*fiber.App
 }
