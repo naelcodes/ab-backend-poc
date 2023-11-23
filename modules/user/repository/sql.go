@@ -1,6 +1,8 @@
 package repository
 
-import . "neema.co.za/rest/modules/user/models"
+import (
+	. "neema.co.za/rest/utils/models"
+)
 
 func (r *Repository) GetUserByID(id int) (*User, error) {
 	// Database query to get a user by ID
