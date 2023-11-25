@@ -6,3 +6,7 @@ type User struct {
 	Name  string `json:"name" xorm:"'name'"`
 	Email string `json:"email" xorm:"'email'"`
 }
+
+func (*User) TableName() string {
+	return "user"
+}

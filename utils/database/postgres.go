@@ -4,14 +4,16 @@ package database
 import (
 	"context"
 	"fmt"
-	"log"
+	log "log"
 	"os"
 	"sync"
 
-	"github.com/go-xorm/xorm"
-	_ "github.com/lib/pq"
 	"gocloud.dev/postgres"
 	_ "gocloud.dev/postgres/awspostgres"
+	"xorm.io/xorm"
+	"xorm.io/xorm/core"
+	xlog "xorm.io/xorm/log"
+	"xorm.io/xorm/names"
 	//"gorm.io/driver/postgres"
 )
 
@@ -36,19 +38,23 @@ func GetDatabase() *Database {
 			return
 		}
 		defer db.Close()
-
-		xormEngine, err := xorm.NewEngine("postgres", dbURL)
+		coreDB := core.FromDB(db)
+		xengine, err := xorm.NewEngineWithDB("postgres", dbURL, coreDB)
 		if err != nil {
 			log.Fatalf("Error creating XORM engine: %v", err)
 		}
-		xormEngine.DB().DB = db
 
-		if err := xormEngine.Ping(); err != nil {
+		// Enable query logging
+		xengine.SetLogger(xlog.NewSimpleLogger(os.Stdout))
+
+		xengine.SetMapper(names.GonicMapper{})
+
+		if err := xengine.Ping(); err != nil {
 			log.Fatalf("Error pinging database: %v", err)
 		}
 
 		log.Println("Connected to PostgreSQL database")
-		engine = &Database{xormEngine}
+		engine = &Database{xengine}
 	})
 	return engine
 }

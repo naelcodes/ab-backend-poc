@@ -5,8 +5,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
-type RouterCreator func(prefix string, handlers ...fiber.Handler) fiber.Router
-type Router fiber.Router
+// type RouterCreator func(prefix string, handlers ...fiber.Handler) fiber.Router
+// type Router fiber.Router
 type App struct {
 	*fiber.App
 }
@@ -17,16 +17,20 @@ func init() {
 	app = &App{fiber.New()}
 }
 
-func NewRouter() RouterCreator {
-	return app.Group
-}
+//func NewRouter() RouterCreator {
+//	return app.Group
+//}
 
 func Initialise() *App {
 	app.Use(getCors())
 	return app
 }
-func getCors() fiber.Handler {
-	return cors.New(cors.Config{
+
+func getCors() func(*fiber.Ctx) error {
+	config := cors.Config{
 		AllowOrigins: "*",
-	})
+		AllowMethods: "GET, POST, PUT, DELETE",
+	}
+
+	return cors.New(config)
 }

@@ -2,7 +2,7 @@
 package service
 
 import (
-	"neema.co.za/rest/modules/user/repository"
+	"neema.co.za/rest/modules/user/internal/repository"
 )
 
 type Service struct {

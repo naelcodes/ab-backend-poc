@@ -1,18 +1,17 @@
 package user
 
 import (
-	. "neema.co.za/rest/modules/user/api"
-	. "neema.co.za/rest/utils/app"
+	"github.com/gofiber/fiber/v2"
+
+	. "neema.co.za/rest/modules/user/internal/api"
 )
 
-const API_BASE_PATH = "/api/v1"
-
-func Start(handler *Api) {
-
-	router := handler.RouterCreator(API_BASE_PATH)
-	handleRoutes(handler, router.Group("/customers"))
+func GetApp() *fiber.App {
+	api := GetApi()
+	handleRoutes(api)
+	return api.App
 }
 
-func handleRoutes(handler *Api, router Router) {
-	router.Get("", handler.GetUserByID)
+func handleRoutes(api *Api) {
+	api.Get("", api.GetUserByID)
 }

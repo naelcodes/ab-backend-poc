@@ -5,7 +5,7 @@ import (
 )
 
 func (r *Repository) GetUserByID(id int) (*User, error) {
-	// Database query to get a user by ID
-	// Return a User struct or an error
-	return nil, nil
+	var users []User
+	r.Find(users)
+	return &users[0], nil
 }
