@@ -23,5 +23,5 @@ func main() {
 
 	routerV1 := app.Group(API_V1_BASE_PATH)
 
-	routerV1.Mount("/customers", userModule.GetApp())
+	routerV1.Mount("/users", userModule.GetApp())
 }
