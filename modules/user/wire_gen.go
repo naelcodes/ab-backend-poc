@@ -7,27 +7,21 @@
 package user
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"neema.co.za/rest/modules/user/internal/api"
 	"neema.co.za/rest/modules/user/internal/repository"
 	"neema.co.za/rest/modules/user/internal/service"
+	"neema.co.za/rest/utils/app"
 	"neema.co.za/rest/utils/database"
 )
 
 // Injectors from wire.go:
 
 // New api handler
-func GetApi() *api.Api {
+func BuildApi() *api.Api {
 	databaseDatabase := database.GetDatabase()
 	repositoryRepository := repository.NewRepository(databaseDatabase)
 	serviceService := service.NewService(repositoryRepository)
-	app := NewFiberApp()
-	apiApi := api.NewApi(serviceService, app)
+	fiberApp := app.NewFiberApp()
+	apiApi := api.NewApi(serviceService, fiberApp)
 	return apiApi
-}
-
-// wire.go:
-
-func NewFiberApp() *fiber.App {
-	return fiber.New()
 }

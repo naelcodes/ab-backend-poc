@@ -7,6 +7,7 @@ import (
 	"neema.co.za/rest/modules/user/internal/service"
 )
 
+type Module Api
 type Api struct {
 	*service.Service
 	*fiber.App

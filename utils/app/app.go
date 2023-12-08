@@ -14,7 +14,11 @@ type App struct {
 var app *App
 
 func init() {
-	app = &App{fiber.New()}
+	app = &App{NewFiberApp()}
+}
+
+func NewFiberApp() *fiber.App {
+	return fiber.New()
 }
 
 //func NewRouter() RouterCreator {

@@ -1,15 +1,14 @@
 package user
 
 import (
-	"github.com/gofiber/fiber/v2"
-
 	. "neema.co.za/rest/modules/user/internal/api"
 )
 
-func GetApp() *fiber.App {
-	api := GetApi()
+func GetModule() *Module {
+	api := BuildApi()
 	handleRoutes(api)
-	return api.App
+	module := Module(*api) //Module is an alias of Api
+	return &module
 }
 
 func handleRoutes(api *Api) {
