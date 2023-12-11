@@ -10,9 +10,10 @@ import (
 
 	"gocloud.dev/postgres"
 	_ "gocloud.dev/postgres/awspostgres"
+	logger "neema.co.za/rest/utils/logger"
+
 	"xorm.io/xorm"
 	"xorm.io/xorm/core"
-	xlog "xorm.io/xorm/log"
 	"xorm.io/xorm/names"
 	//"gorm.io/driver/postgres"
 )
@@ -45,7 +46,11 @@ func GetDatabase() *Database {
 		}
 
 		// Enable query logging
-		xengine.SetLogger(xlog.NewSimpleLogger(os.Stdout))
+		customXormLogger := new(logger.CustomXormLogger)
+		customXormLogger.Logger = logger.GetLogger()
+		customXormLogger.ShowSQL(true)
+
+		xengine.SetLogger(customXormLogger)
 
 		xengine.SetMapper(names.GonicMapper{})
 
@@ -53,7 +58,7 @@ func GetDatabase() *Database {
 			log.Fatalf("Error pinging database: %v", err)
 		}
 
-		log.Println("Connected to PostgreSQL database")
+		logger.Info("Connected to PostgreSQL database")
 		engine = &Database{xengine}
 	})
 	return engine

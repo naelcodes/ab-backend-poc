@@ -2,7 +2,6 @@ package app
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 // type RouterCreator func(prefix string, handlers ...fiber.Handler) fiber.Router
@@ -27,14 +26,6 @@ func NewFiberApp() *fiber.App {
 
 func Initialise() *App {
 	app.Use(getCors())
+	app.Use(getRecover())
 	return app
-}
-
-func getCors() func(*fiber.Ctx) error {
-	config := cors.Config{
-		AllowOrigins: "*",
-		AllowMethods: "GET, POST, PUT, DELETE",
-	}
-
-	return cors.New(config)
 }
