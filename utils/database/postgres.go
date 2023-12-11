@@ -38,7 +38,7 @@ func GetDatabase() *Database {
 		if err != nil {
 			return
 		}
-		defer db.Close()
+		//defer db.Close()
 		coreDB := core.FromDB(db)
 		xengine, err := xorm.NewEngineWithDB("postgres", dbURL, coreDB)
 		if err != nil {
@@ -46,11 +46,8 @@ func GetDatabase() *Database {
 		}
 
 		// Enable query logging
-		customXormLogger := new(logger.CustomXormLogger)
-		customXormLogger.Logger = logger.GetLogger()
-		customXormLogger.ShowSQL(true)
 
-		xengine.SetLogger(customXormLogger)
+		xengine.SetLogger(logger.GetCustomXormLogger())
 
 		xengine.SetMapper(names.GonicMapper{})
 

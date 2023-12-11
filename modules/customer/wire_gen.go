@@ -7,9 +7,9 @@
 package user
 
 import (
-	"neema.co.za/rest/modules/user/internal/api"
-	"neema.co.za/rest/modules/user/internal/repository"
-	"neema.co.za/rest/modules/user/internal/service"
+	"neema.co.za/rest/modules/customer/internal/api"
+	"neema.co.za/rest/modules/customer/internal/repository"
+	"neema.co.za/rest/modules/customer/internal/service"
 	"neema.co.za/rest/utils/app"
 	"neema.co.za/rest/utils/database"
 )

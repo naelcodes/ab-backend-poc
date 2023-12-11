@@ -6,6 +6,19 @@ import (
 	"github.com/rs/zerolog"
 )
 
+var customXormLogger *CustomXormLogger
+
+func init() {
+
+	customXormLogger = new(CustomXormLogger)
+	customXormLogger.Logger = GetAppLogger()
+	customXormLogger.showSQL = true
+}
+
+func GetCustomXormLogger() *CustomXormLogger {
+	return customXormLogger
+}
+
 type CustomXormLogger struct {
 	Logger  *zerolog.Logger
 	showSQL bool

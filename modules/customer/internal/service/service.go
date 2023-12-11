@@ -1,9 +1,7 @@
 // service/service.go
 package service
 
-import (
-	"neema.co.za/rest/modules/user/internal/repository"
-)
+import "neema.co.za/rest/modules/customer/internal/repository"
 
 type Service struct {
 	*repository.Repository

@@ -3,8 +3,7 @@ package api
 
 import (
 	"github.com/gofiber/fiber/v2"
-
-	"neema.co.za/rest/modules/user/internal/service"
+	"neema.co.za/rest/modules/customer/internal/service"
 )
 
 type Module Api

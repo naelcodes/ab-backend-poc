@@ -1,7 +1,7 @@
 package user
 
 import (
-	. "neema.co.za/rest/modules/user/internal/api"
+	. "neema.co.za/rest/modules/customer/internal/api"
 )
 
 func GetModule() *Module {
@@ -12,5 +12,5 @@ func GetModule() *Module {
 }
 
 func handleRoutes(api *Api) {
-	api.Get("", api.GetUserByID)
+	api.Get("", api.GetAllCustomerHandler)
 }

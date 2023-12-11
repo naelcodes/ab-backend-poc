@@ -9,7 +9,7 @@ import (
 
 	logger "neema.co.za/rest/utils/logger"
 
-	userModule "neema.co.za/rest/modules/user"
+	customerModule "neema.co.za/rest/modules/customer"
 	App "neema.co.za/rest/utils/app"
 )
 
@@ -31,6 +31,6 @@ func main() {
 
 	routerV1 := app.Group(os.Getenv("API_V1_BASE_PATH"))
 
-	routerV1.Mount("/users", userModule.GetModule().App)
-	fmt.Println("hello")
+	routerV1.Mount("/customers", customerModule.GetModule().App)
+
 }
