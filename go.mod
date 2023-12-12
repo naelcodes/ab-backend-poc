@@ -14,6 +14,7 @@ require (
 require (
 	contrib.go.opencensus.io/integrations/ocsql v0.1.7 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible // indirect
 	github.com/goccy/go-json v0.8.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.4 // indirect

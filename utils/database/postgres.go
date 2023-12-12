@@ -38,6 +38,7 @@ func GetDatabase() *Database {
 		if err != nil {
 			return
 		}
+		//TODO : Add Pooling mechanism
 		//defer db.Close()
 		coreDB := core.FromDB(db)
 		xengine, err := xorm.NewEngineWithDB("postgres", dbURL, coreDB)

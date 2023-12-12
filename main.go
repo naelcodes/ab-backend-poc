@@ -17,7 +17,7 @@ func init() {
 	logger.Info("Loading environment variables")
 
 	if err := godotenv.Load(); err != nil {
-		fmt.Println("error loading .env file - err :", err)
+		logger.Error(fmt.Sprintf("error loading .env file - err : %v", err))
 	}
 
 	logger.Info("Loading environment loaded")
@@ -27,7 +27,8 @@ func init() {
 func main() {
 
 	app := App.Initialise()
-	defer app.Listen(":8080")
+
+	defer app.Listen(fmt.Sprintf(":%s", os.Getenv("APP_PORT")))
 
 	routerV1 := app.Group(os.Getenv("API_V1_BASE_PATH"))
 
