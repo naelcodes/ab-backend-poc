@@ -49,7 +49,7 @@ func GetDatabase() *Database {
 		// Enable query logging
 
 		xengine.SetLogger(logger.GetCustomXormLogger())
-
+		xengine.SetMaxIdleConns(1)
 		xengine.SetMapper(names.GonicMapper{})
 
 		if err := xengine.Ping(); err != nil {
