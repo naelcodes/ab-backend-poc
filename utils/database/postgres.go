@@ -10,9 +10,10 @@ import (
 
 	"gocloud.dev/postgres"
 	_ "gocloud.dev/postgres/awspostgres"
+	logger "neema.co.za/rest/utils/logger"
+
 	"xorm.io/xorm"
 	"xorm.io/xorm/core"
-	xlog "xorm.io/xorm/log"
 	"xorm.io/xorm/names"
 	//"gorm.io/driver/postgres"
 )
@@ -37,7 +38,8 @@ func GetDatabase() *Database {
 		if err != nil {
 			return
 		}
-		defer db.Close()
+		//TODO : Add Pooling mechanism
+		//defer db.Close()
 		coreDB := core.FromDB(db)
 		xengine, err := xorm.NewEngineWithDB("postgres", dbURL, coreDB)
 		if err != nil {
@@ -45,15 +47,16 @@ func GetDatabase() *Database {
 		}
 
 		// Enable query logging
-		xengine.SetLogger(xlog.NewSimpleLogger(os.Stdout))
 
+		xengine.SetLogger(logger.GetCustomXormLogger())
+		xengine.SetMaxIdleConns(1)
 		xengine.SetMapper(names.GonicMapper{})
 
 		if err := xengine.Ping(); err != nil {
 			log.Fatalf("Error pinging database: %v", err)
 		}
 
-		log.Println("Connected to PostgreSQL database")
+		logger.Info("Connected to PostgreSQL database")
 		engine = &Database{xengine}
 	})
 	return engine

@@ -3,17 +3,18 @@ module neema.co.za/rest
 go 1.21.1
 
 require (
-	github.com/go-xorm/xorm v0.7.9
 	github.com/gofiber/fiber/v2 v2.51.0
 	github.com/google/wire v0.5.0
 	github.com/joho/godotenv v1.5.1
-	github.com/lib/pq v1.10.9
+	github.com/rs/zerolog v1.31.0
 	gocloud.dev v0.34.0
+	xorm.io/xorm v1.3.4
 )
 
 require (
 	contrib.go.opencensus.io/integrations/ocsql v0.1.7 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible // indirect
 	github.com/goccy/go-json v0.8.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.4 // indirect
@@ -21,6 +22,7 @@ require (
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
+	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
@@ -33,12 +35,10 @@ require (
 	github.com/valyala/fasthttp v1.50.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/crypto v0.14.0 // indirect
-	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
+	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/net v0.13.0 // indirect
 	golang.org/x/sys v0.14.0 // indirect
-	golang.org/x/tools v0.1.12 // indirect
-	xorm.io/builder v0.3.11-0.20220531020008-1bd24a7dc978 // indirect
-	xorm.io/core v0.7.2-0.20190928055935-90aeac8d08eb // indirect
-	xorm.io/xorm v1.3.4 // indirect
+	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/tools v0.6.0 // indirect
+	xorm.io/builder v0.3.13 // indirect
 )

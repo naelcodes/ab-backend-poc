@@ -2,7 +2,8 @@ package app
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
+	"neema.co.za/rest/utils/errors"
+	"neema.co.za/rest/utils/middlewares"
 )
 
 // type RouterCreator func(prefix string, handlers ...fiber.Handler) fiber.Router
@@ -18,7 +19,11 @@ func init() {
 }
 
 func NewFiberApp() *fiber.App {
-	return fiber.New()
+	config := fiber.Config{
+		ErrorHandler: errors.GlobalErrorHandler,
+	}
+
+	return fiber.New(config)
 }
 
 //func NewRouter() RouterCreator {
@@ -26,15 +31,10 @@ func NewFiberApp() *fiber.App {
 //}
 
 func Initialise() *App {
-	app.Use(getCors())
+
+	app.Use(middlewares.Recover())
+	app.Use(middlewares.GetCors())
+	app.Use(middlewares.QueryValidator())
+
 	return app
-}
-
-func getCors() func(*fiber.Ctx) error {
-	config := cors.Config{
-		AllowOrigins: "*",
-		AllowMethods: "GET, POST, PUT, DELETE",
-	}
-
-	return cors.New(config)
 }
