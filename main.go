@@ -9,7 +9,10 @@ import (
 
 	logger "neema.co.za/rest/utils/logger"
 
+	bookingModule "neema.co.za/rest/modules/booking"
 	customerModule "neema.co.za/rest/modules/customer"
+	invoiceModule "neema.co.za/rest/modules/invoice"
+	paymentModule "neema.co.za/rest/modules/payment"
 	App "neema.co.za/rest/utils/app"
 )
 
@@ -33,5 +36,9 @@ func main() {
 	routerV1 := app.Group(os.Getenv("API_V1_BASE_PATH"))
 
 	routerV1.Mount("/customers", customerModule.GetModule().App)
+	routerV1.Mount("/travel-items", bookingModule.GetModule().App)
+
+	routerV1.Mount("/invoices", invoiceModule.GetModule().App)
+	routerV1.Mount("/payments", paymentModule.GetModule().App)
 
 }

@@ -40,5 +40,5 @@ require (
 	golang.org/x/sys v0.14.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
-	xorm.io/builder v0.3.11-0.20220531020008-1bd24a7dc978 // indirect
+	xorm.io/builder v0.3.13 // indirect
 )
