@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"neema.co.za/rest/modules/customer/internal/domain"
-	"neema.co.za/rest/modules/customer/internal/dto"
+
+	"neema.co.za/rest/utils/dto"
 	"neema.co.za/rest/utils/logger"
 	"neema.co.za/rest/utils/types"
 )

@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"neema.co.za/rest/modules/customer/internal/domain"
-	"neema.co.za/rest/modules/customer/internal/dto"
+	"neema.co.za/rest/utils/dto"
 	"neema.co.za/rest/utils/logger"
-	"neema.co.za/rest/utils/models"
-	. "neema.co.za/rest/utils/models"
+	. "neema.co.za/rest/utils/mappers"
+	dbModels "neema.co.za/rest/utils/models"
 	"neema.co.za/rest/utils/types"
 
 	CustomErrors "neema.co.za/rest/utils/errors"
@@ -18,11 +18,8 @@ const tag = "3"
 
 func (r *Repository) Count() (*int64, error) {
 	logger.Info("Counting customers")
-	customerQuery := r.Where("tag = ?", tag)
 
-	customer := new(models.Customer)
-
-	totalRowCount, err := customerQuery.Count(customer)
+	totalRowCount, err := r.Where("tag = ?", tag).Count(new(dbModels.Customer))
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error counting customers: %v", err))
@@ -37,7 +34,7 @@ func (r *Repository) Count() (*int64, error) {
 func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*dto.GetAllCustomersDTO, error) {
 
 	customerQuery := r.Where("tag = ?", tag)
-	customers := make([]*Customer, 0)
+	customers := make([]*dbModels.Customer, 0)
 
 	totalRowCount, err := r.Count()
 
@@ -96,8 +93,7 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*dto.GetAllCusto
 
 func (r *Repository) GetById(id int) (*dto.GetCustomerDTO, error) {
 	customerQuery := r.Where("tag = ?", tag)
-	customer := new(Customer)
-
+	customer := new(dbModels.Customer)
 	has, err := customerQuery.ID(id).Get(customer)
 
 	if err != nil {

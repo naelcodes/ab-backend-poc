@@ -1,8 +1,8 @@
-package user
+package customer
 
 import (
 	. "neema.co.za/rest/modules/customer/internal/api"
-	"neema.co.za/rest/modules/customer/internal/dto"
+	"neema.co.za/rest/utils/dto"
 	"neema.co.za/rest/utils/middlewares"
 )
 

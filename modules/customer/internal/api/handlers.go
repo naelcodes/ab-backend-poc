@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"neema.co.za/rest/modules/customer/internal/dto"
+	"neema.co.za/rest/utils/dto"
 	CustomErrors "neema.co.za/rest/utils/errors"
 	"neema.co.za/rest/utils/logger"
 	"neema.co.za/rest/utils/types"

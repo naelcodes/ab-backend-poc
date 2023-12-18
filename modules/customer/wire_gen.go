@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package user
+package customer
 
 import (
 	"neema.co.za/rest/modules/customer/internal/api"
