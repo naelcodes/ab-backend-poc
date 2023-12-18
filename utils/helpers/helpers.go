@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -39,18 +38,6 @@ func GenerateCode(prefix string, number int) string {
 func GetCurrentDate() string {
 	currentDate := time.Now().Format("2006-01-02")
 	return currentDate
-}
-
-func FormatDate(date string) string {
-	ok, _ := regexp.Match("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", []byte(date))
-	if !ok {
-		// log.Printf("date: %s", date)
-		parsedDate, _ := time.Parse(time.RFC3339, date)
-		// log.Printf("parsedDate: %s", parsedDate)
-		return parsedDate.Local().Format("2006-01-02")
-	}
-	return date
-
 }
 
 func RoundDecimalPlaces(value float64, precision int) float64 {

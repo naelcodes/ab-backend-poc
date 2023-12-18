@@ -6,13 +6,6 @@ type BaseEntity struct {
 	Id EID
 }
 
-type GetAllDTO[T any] struct {
-	Data          T   `json:"data"`
-	PageNumber    int `json:"pageNumber"`
-	PageSize      int `json:"pageSize"`
-	TotalRowCount int `json:"totalRowCount"`
-}
-
 type GetQueryParams struct {
 	PageSize   *int      `query:"page-size"`
 	PageNumber *int      `query:"page"`
@@ -22,4 +15,11 @@ type GetQueryParams struct {
 
 type DtoValidator interface {
 	Validate() error
+}
+
+type GetAllDTO[T any] struct {
+	Data          T   `json:"data"`
+	PageNumber    int `json:"pageNumber"`
+	PageSize      int `json:"pageSize"`
+	TotalRowCount int `json:"totalRowCount"`
 }
