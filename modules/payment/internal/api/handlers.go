@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"neema.co.za/rest/utils/dto"
 	CustomErrors "neema.co.za/rest/utils/errors"
 	"neema.co.za/rest/utils/logger"
+	"neema.co.za/rest/utils/payloads"
 	"neema.co.za/rest/utils/types"
 )
 
@@ -53,16 +53,16 @@ func (api *Api) GetPaymentHandler(c *fiber.Ctx) error {
 
 func (api *Api) CreatePaymentHandler(c *fiber.Ctx) error {
 
-	createPaymentDTO := c.Locals("payload").(*dto.CreatePaymentDTO)
-	logger.Info(fmt.Sprintf("CreatePaymentDTO: %v", createPaymentDTO))
+	createPaymentPayload := c.Locals("payload").(*payloads.CreatePaymentPayload)
+	logger.Info(fmt.Sprintf("CreatePaymentDTO: %v", createPaymentPayload))
 
-	newPaymentDTO, err := api.Service.CreatePaymentService(createPaymentDTO)
+	newPaymentRecord, err := api.Service.CreatePaymentService(*createPaymentPayload)
 
 	if err != nil {
-		logger.Error(fmt.Sprintf("Error creating payment DTO: %v", err))
+		logger.Error(fmt.Sprintf("Error creating payment Record: %v", err))
 		return err
 	}
 
-	logger.Info(fmt.Sprintf("NewPaymentDTO: %v", newPaymentDTO))
-	return c.Status(fiber.StatusCreated).JSON(newPaymentDTO)
+	logger.Info(fmt.Sprintf("NewPaymentDTO: %v", newPaymentRecord))
+	return c.Status(fiber.StatusCreated).JSON(newPaymentRecord)
 }

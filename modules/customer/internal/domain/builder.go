@@ -2,20 +2,20 @@ package domain
 
 import (
 	"neema.co.za/rest/utils/helpers"
-	"neema.co.za/rest/utils/types"
+	"neema.co.za/rest/utils/models"
 )
 
 type CustomerBuilder struct {
-	customer *Customer
+	customer *models.Customer
 }
 
-func NewCustomerBuilder() *CustomerBuilder {
+func NewCustomerBuilder(customer *models.Customer) *CustomerBuilder {
 	builder := new(CustomerBuilder)
-	builder.customer = new(Customer)
+	builder.customer = customer
 	return builder
 }
 
-func (builder *CustomerBuilder) SetId(id types.EID) *CustomerBuilder {
+func (builder *CustomerBuilder) SetId(id int) *CustomerBuilder {
 	builder.customer.Id = id
 	return builder
 }
@@ -50,6 +50,9 @@ func (builder *CustomerBuilder) SetState(state string) *CustomerBuilder {
 	return builder
 }
 
-func (builder *CustomerBuilder) Build() *Customer {
-	return builder.customer
+func (builder *CustomerBuilder) SetDefaults() *CustomerBuilder {
+	builder.customer.Tag = "3"
+	builder.customer.IdCountry = 40
+	builder.customer.IdCurrency = 550
+	return builder
 }

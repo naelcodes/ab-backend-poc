@@ -1,33 +1,22 @@
 package domain
 
 import (
-	"errors"
-	"fmt"
-
-	CustomErrors "neema.co.za/rest/utils/errors"
 	Helpers "neema.co.za/rest/utils/helpers"
-	"neema.co.za/rest/utils/types"
+	"neema.co.za/rest/utils/models"
 )
 
 type PaymentBuilder struct {
-	payment *Payment
-	errors  error
+	payment *models.Payment
 }
 
-func NewPaymentBuilder() *PaymentBuilder {
+func NewPaymentBuilder(payment *models.Payment) *PaymentBuilder {
 	builder := new(PaymentBuilder)
-	builder.payment = new(Payment)
-
+	builder.payment = payment
 	return builder
 }
 
-func (builder *PaymentBuilder) SetId(id types.EID) *PaymentBuilder {
+func (builder *PaymentBuilder) SetId(id int) *PaymentBuilder {
 	builder.payment.Id = id
-	return builder
-}
-
-func (builder *PaymentBuilder) SetPaymentNumber(paymentCount int) *PaymentBuilder {
-	builder.payment.PaymentNumber = Helpers.GenerateCode("pr", paymentCount)
 	return builder
 }
 
@@ -43,6 +32,7 @@ func (builder *PaymentBuilder) SetPaymentMode(paymentMode string) *PaymentBuilde
 
 func (builder *PaymentBuilder) SetAmount(amount float64) *PaymentBuilder {
 	builder.payment.Amount = amount
+	builder.payment.BaseAmount = amount
 	return builder
 }
 
@@ -53,6 +43,7 @@ func (builder *PaymentBuilder) SetBalance(balance float64) *PaymentBuilder {
 
 func (builder *PaymentBuilder) SetUsedAmount(usedAmount float64) *PaymentBuilder {
 	builder.payment.UsedAmount = usedAmount
+
 	return builder
 }
 
@@ -66,34 +57,10 @@ func (builder *PaymentBuilder) SetIdCustomer(idCustomer int) *PaymentBuilder {
 	return builder
 }
 
-func (builder *PaymentBuilder) Validate() error {
-
-	if builder.payment.Amount < 0 {
-		builder.errors = errors.Join(builder.errors, fmt.Errorf("payment.amount can't be less than 0"))
-	}
-
-	if builder.payment.Balance < 0 {
-		builder.errors = errors.Join(builder.errors, fmt.Errorf("payment.balance can't be less than 0"))
-	}
-
-	if builder.payment.UsedAmount < 0 {
-		builder.errors = errors.Join(builder.errors, fmt.Errorf("payment.usedAmount can't be less than 0"))
-	}
-
-	if builder.payment.Balance != Helpers.RoundDecimalPlaces(builder.payment.Amount-builder.payment.UsedAmount, 2) {
-		builder.errors = errors.Join(builder.errors, fmt.Errorf("payment.balance (%v) must be equal to the difference between payment.amount (%v) and payment.usedAmount (%v)", builder.payment.Balance, float64(builder.payment.Amount), float64(builder.payment.UsedAmount)))
-	}
-
-	if builder.payment.UsedAmount > builder.payment.Amount {
-		builder.errors = errors.Join(builder.errors, fmt.Errorf("payment.usedAmount can't be greater than payment.amount"))
-	}
-
-	if builder.errors != nil {
-		return CustomErrors.DomainError(builder.errors)
-	}
-	return nil
-}
-
-func (builder *PaymentBuilder) Build() *Payment {
-	return builder.payment
+func (builder *PaymentBuilder) SetDefaults() *PaymentBuilder {
+	builder.payment.Type = "customer_payment"
+	builder.payment.IdCurrency = 550
+	builder.payment.IdChartOfAccounts = 39
+	builder.payment.Tag = "3"
+	return builder
 }

@@ -2,37 +2,52 @@ package repository
 
 import (
 	"fmt"
+	"reflect"
 
-	"neema.co.za/rest/modules/payment/internal/domain"
-	"neema.co.za/rest/utils/dto"
 	CustomErrors "neema.co.za/rest/utils/errors"
 	"neema.co.za/rest/utils/logger"
-	. "neema.co.za/rest/utils/mappers"
-	dbModels "neema.co.za/rest/utils/models"
+	"neema.co.za/rest/utils/models"
 	"neema.co.za/rest/utils/types"
+	"xorm.io/xorm"
 )
 
 const tag = "3"
-const embedCustomerSqlQuery = "(SELECT to_jsonb(customer) FROM (SELECT id,customer_name,account_number,alias,ab_key,state,tmc_client_number FROM customer WHERE id=payment_received.id_customer) AS customer) AS customer "
+const embedCustomerSqlQuery = `
+	(
+	    SELECT
+	        to_jsonb (customer)
+	    FROM (
+	        SELECT
+	            id,
+	            customer_name AS customerName,
+	            account_number AS accountNumber,
+	            alias,
+	            ab_key AS abKey,
+	            state,
+	            tmc_client_number AS tmcClientNumber
+	        FROM
+	            customer
+	        WHERE
+	            id = payment_received.id_customer) AS customer) AS customer`
 
-const paymentSql = "SELECT id,number,to_char(date,'yyyy-mm-dd') as date,balance::numeric,amount::numeric,used_amount::numeric,fop,status "
+const paymentSql = `SELECT id,number,to_char(date,'yyyy-mm-dd') as date,balance::numeric,amount::numeric,used_amount::numeric,fop,status`
 
-func (r *Repository) Count() (*int64, error) {
+func (r *Repository) Count() (int64, error) {
 	logger.Info("Counting payments")
 
-	totalRowCount, err := r.Where("tag = ?", tag).Count(new(dbModels.Payment))
+	totalRowCount, err := r.Where("tag = ?", tag).Count(new(models.Payment))
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error counting payments: %v", err))
-		return nil, CustomErrors.RepositoryError(fmt.Errorf("error counting payment records: %v", err))
+		return 0, CustomErrors.RepositoryError(fmt.Errorf("error counting payment records: %v", err))
 	}
 
 	logger.Info(fmt.Sprintf("Total payment count: %v", totalRowCount))
 
-	return &totalRowCount, nil
+	return totalRowCount, nil
 }
 
-func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*dto.GetAllPaymentsDTO, error) {
+func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO[any], error) {
 
 	embedCustomer := false
 	paymentSqlQuery := paymentSql
@@ -44,7 +59,7 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*dto.GetAllPayme
 	}
 
 	pageNumber := 0
-	pageSize := int(*totalRowCount)
+	pageSize := int(totalRowCount)
 
 	if queryParams != nil {
 		if queryParams.PageNumber != nil && queryParams.PageSize != nil {
@@ -63,28 +78,37 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*dto.GetAllPayme
 
 	paymentSqlQuery = paymentSqlQuery + " FROM payment_received  WHERE tag = ?  ORDER BY number DESC LIMIT ? OFFSET ?"
 
-	var payments []*dbModels.Payment
+	var result any
+	var payments = make([]*models.Payment, 0)
+	var paymentsWithCustomer = make([]*struct {
+		models.Payment `xorm:"extends"`
+		Customer       models.Customer `xorm:"jsonb 'customer'" json:"customer"`
+	}, 0)
 
-	err = r.SQL(paymentSqlQuery, tag, pageSize, pageNumber*pageSize).Find(&payments)
+	if embedCustomer {
+		err = r.SQL(paymentSqlQuery, tag, pageSize, pageNumber*pageSize).Find(&paymentsWithCustomer)
+		result = paymentsWithCustomer
+
+	} else {
+		err = r.SQL(paymentSqlQuery, tag, pageSize, pageNumber*pageSize).Find(&payments)
+		result = payments
+	}
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error getting payments: %v", err))
 		return nil, CustomErrors.RepositoryError(fmt.Errorf("error getting payment records: %v", err))
 	}
 
-	logger.Info(fmt.Sprintf("Total payment count: %v", len(payments)))
-
-	paymentDTOList := PaymentModelListToDTOList(payments, embedCustomer)
-	return &dto.GetAllPaymentsDTO{
-		Data:          paymentDTOList,
-		TotalRowCount: int(*totalRowCount),
+	return &types.GetAllDTO[any]{
+		Data:          result,
+		TotalRowCount: int(totalRowCount),
 		PageSize:      pageSize,
 		PageNumber:    pageNumber,
 	}, nil
 
 }
 
-func (r *Repository) GetById(id int, queryParams *types.GetQueryParams) (*dto.GetPaymentDTO, error) {
+func (r *Repository) GetById(id int, queryParams *types.GetQueryParams) (any, error) {
 
 	embedCustomer := false
 	paymentSqlQuery := paymentSql
@@ -100,45 +124,55 @@ func (r *Repository) GetById(id int, queryParams *types.GetQueryParams) (*dto.Ge
 
 	paymentSqlQuery = paymentSqlQuery + " FROM payment_received WHERE tag = ? AND id = ?"
 
-	var paymentRecords []*dbModels.Payment
+	var result any
+	var payments = make([]*models.Payment, 0)
+	var paymentsWithCustomer = make([]*struct {
+		models.Payment `xorm:"extends"`
+		Customer       models.Customer `xorm:"jsonb 'customer'" json:"customer"`
+	}, 0)
 
-	err := r.SQL(paymentSqlQuery, tag, id).Find(&paymentRecords)
+	var err error
+
+	if embedCustomer {
+		err = r.SQL(paymentSqlQuery, tag, id).Find(&paymentsWithCustomer)
+		result = paymentsWithCustomer
+
+	} else {
+		err = r.SQL(paymentSqlQuery, tag, id).Find(&payments)
+		result = payments
+	}
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error getting payment: %v", err))
 		return nil, CustomErrors.RepositoryError(fmt.Errorf("error getting payment records: %v", err))
 	}
 
-	if len(paymentRecords) == 0 {
+	if reflect.ValueOf(result).Len() == 0 {
 		logger.Error(fmt.Sprintf("Payment not found: %v", id))
 		return nil, CustomErrors.NotFoundError(fmt.Errorf("payment record not found"))
 	}
 
-	logger.Info(fmt.Sprintf("payment count: %v", len(paymentRecords)))
-
-	paymentDTOList := PaymentModelToDTO(paymentRecords[0], embedCustomer)
-
-	return paymentDTOList, nil
+	return reflect.ValueOf(result).Index(0).Interface(), nil
 
 }
 
-func (r *Repository) Save(PaymentDomainModel *domain.Payment) (*dto.GetPaymentDTO, error) {
+func (r *Repository) Save(transaction *xorm.Session, payment *models.Payment) (*models.Payment, error) {
 
-	totalRowCount, err := r.Count()
-	if err != nil {
-		return nil, err
-	}
-
-	payment := PaymentModelFromDomainModel(PaymentDomainModel, int(*totalRowCount))
-
-	_, err = r.Insert(payment)
+	err := transaction.DB().QueryRow(`
+		INSERT INTO payment_received (number, date, balance, amount, base_amount, used_amount, type, fop, status, id_chart_of_accounts, id_currency, id_customer, tag)
+		    VALUES (CONCAT('PR-', NEXTVAL('payment_sequence')), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+		RETURNING
+		    id`, payment.PaymentDate, payment.Balance, payment.Amount, payment.BaseAmount, payment.UsedAmount, payment.Type, payment.PaymentMode, payment.Status, payment.IdChartOfAccounts, payment.IdCurrency, payment.IdCustomer, payment.Tag).Scan(&payment.Id)
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error saving payment: %v", err))
 		return nil, CustomErrors.RepositoryError(fmt.Errorf("error saving payment: %v", err))
 	}
 
-	paymentDTO := PaymentModelToDTO(payment, false)
+	paymentRecord, err := r.GetById(payment.Id, nil)
 
-	return paymentDTO, nil
+	if err != nil {
+		return nil, err
+	}
+	return paymentRecord.(*models.Payment), nil
 }

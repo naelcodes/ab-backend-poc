@@ -1,21 +1,19 @@
 package models
 
 type Invoice struct {
-	Id             int     `xorm:"'id' pk autoincr"`
-	Creation_date  string  `xorm:"not null 'creation_date'"`
-	Invoice_number string  `xorm:"not null 'invoice_number'"`
-	Due_date       string  `xorm:"not null 'due_date'"`
-	Status         string  `xorm:"not null 'status'"`
-	Amount         float64 `xorm:"not null 'amount'"`
-	Balance        float64 `xorm:"not null 'balance'"`
-	Net_amount     float64 `xorm:"not null 'net_amount'"`
-	Base_amount    float64 `xorm:"not null 'base_amount'"`
-	Credit_apply   float64 `xorm:"not null 'credit_apply'"`
-	Tag            string  `xorm:" not null 'tag' "`
+	Id            int     `xorm:"'id' pk autoincr" json:"id"`
+	CreationDate  string  `xorm:"not null 'creation_date'" json:"creationDate"`
+	InvoiceNumber string  `xorm:"not null 'invoice_number'" json:"invoiceNumber"`
+	DueDate       string  `xorm:"not null 'due_date'" json:"dueDate"`
+	Status        string  `xorm:"not null 'status'" json:"status"`
+	Amount        float64 `xorm:"not null 'amount'" json:"amount"`
+	Balance       float64 `xorm:"not null 'balance'" json:"balance"`
+	NetAmount     float64 `xorm:"not null 'net_amount'" json:"-"`
+	BaseAmount    float64 `xorm:"not null 'base_amount'" json:"-"`
+	CreditApply   float64 `xorm:"not null 'credit_apply'" json:"creditApply"`
+	Tag           string  `xorm:" not null 'tag' " json:"-"`
 
-	Id_customer  *int         `xorm:"'id_customer'"`
-	Customer     *string      `xorm:"'customer' "`
-	Travel_items []TravelItem `xorm:"'travel_items'"`
+	IdCustomer int `xorm:"'id_customer'" json:"idCustomer"`
 }
 
 func (*Invoice) TableName() string {

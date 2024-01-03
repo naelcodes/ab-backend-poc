@@ -2,13 +2,9 @@ package repository
 
 import (
 	"fmt"
-	"strings"
 
-	"neema.co.za/rest/modules/customer/internal/domain"
-	"neema.co.za/rest/utils/dto"
 	"neema.co.za/rest/utils/logger"
-	. "neema.co.za/rest/utils/mappers"
-	dbModels "neema.co.za/rest/utils/models"
+	"neema.co.za/rest/utils/models"
 	"neema.co.za/rest/utils/types"
 
 	CustomErrors "neema.co.za/rest/utils/errors"
@@ -16,25 +12,25 @@ import (
 
 const tag = "3"
 
-func (r *Repository) Count() (*int64, error) {
+func (r *Repository) Count() (int64, error) {
 	logger.Info("Counting customers")
 
-	totalRowCount, err := r.Where("tag = ?", tag).Count(new(dbModels.Customer))
+	totalRowCount, err := r.Where("tag = ?", tag).Count(new(models.Customer))
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error counting customers: %v", err))
-		return nil, CustomErrors.RepositoryError(fmt.Errorf("error counting customer records: %v", err))
+		return 0, CustomErrors.RepositoryError(fmt.Errorf("error counting customer records: %v", err))
 	}
 
 	logger.Info(fmt.Sprintf("Total customer count: %v", totalRowCount))
 
-	return &totalRowCount, nil
+	return totalRowCount, nil
 
 }
-func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*dto.GetAllCustomersDTO, error) {
+func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO[any], error) {
 
 	customerQuery := r.Where("tag = ?", tag)
-	customers := make([]*dbModels.Customer, 0)
+	customers := make([]*models.Customer, 0)
 
 	totalRowCount, err := r.Count()
 
@@ -43,23 +39,11 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*dto.GetAllCusto
 	}
 
 	pageNumber := 0
-	pageSize := int(*totalRowCount)
+	pageSize := int(totalRowCount)
 
 	logger.Info(fmt.Sprintf("QueryParams: %v", queryParams))
 
 	if queryParams != nil {
-
-		if queryParams.Fields != nil {
-			fields := *(*queryParams).Fields
-			logger.Info(fmt.Sprintf("query fields : %v", fields))
-
-			if strings.Contains(fields[0], "id") {
-				customerQuery.Cols("id")
-			}
-			if strings.Contains(fields[0], "name") {
-				customerQuery.Cols("customer_name")
-			}
-		}
 
 		if queryParams.PageNumber != nil && queryParams.PageSize != nil {
 			pageNumber = *queryParams.PageNumber
@@ -80,20 +64,18 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*dto.GetAllCusto
 
 	logger.Info(fmt.Sprintf("Found %v customers", len(customers)))
 
-	customersDTO := CustomerModelListToDTOList(customers)
-
-	getAllCustomersDTO := new(dto.GetAllCustomersDTO)
-	getAllCustomersDTO.Data = customersDTO
-	getAllCustomersDTO.TotalRowCount = int(*totalRowCount)
+	getAllCustomersDTO := new(types.GetAllDTO[any])
+	getAllCustomersDTO.Data = customers
+	getAllCustomersDTO.TotalRowCount = int(totalRowCount)
 	getAllCustomersDTO.PageNumber = pageNumber
 	getAllCustomersDTO.PageSize = pageSize
 
 	return getAllCustomersDTO, nil
 }
 
-func (r *Repository) GetById(id int) (*dto.GetCustomerDTO, error) {
+func (r *Repository) GetById(id int) (*models.Customer, error) {
 	customerQuery := r.Where("tag = ?", tag)
-	customer := new(dbModels.Customer)
+	customer := new(models.Customer)
 	has, err := customerQuery.ID(id).Get(customer)
 
 	if err != nil {
@@ -108,14 +90,11 @@ func (r *Repository) GetById(id int) (*dto.GetCustomerDTO, error) {
 
 	logger.Info(fmt.Sprintf("Found customer: %v", customer))
 
-	customerDTO := CustomerModelToDTO(customer)
-
-	return customerDTO, nil
+	return customer, nil
 }
 
-func (r *Repository) Save(customerDomainModel *domain.Customer) (*dto.GetCustomerDTO, error) {
+func (r *Repository) Save(customer *models.Customer) (*models.Customer, error) {
 
-	customer := CustomerModelFromDomainModel(customerDomainModel)
 	_, err := r.Insert(customer)
 
 	if err != nil {
@@ -124,8 +103,5 @@ func (r *Repository) Save(customerDomainModel *domain.Customer) (*dto.GetCustome
 	}
 
 	logger.Info(fmt.Sprintf("Saved customer: %v", customer))
-
-	customerDTO := CustomerModelToDTO(customer)
-
-	return customerDTO, nil
+	return r.GetById(customer.Id)
 }
