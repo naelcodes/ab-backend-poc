@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -43,4 +44,23 @@ func GetCurrentDate() string {
 func RoundDecimalPlaces(value float64, precision int) float64 {
 	shift := math.Pow(10, float64(precision))
 	return math.Round(value*shift) / shift
+}
+
+func StructToMap(input any) map[string]any {
+	result := make(map[string]any)
+
+	val := reflect.ValueOf(input)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+
+	typ := val.Type()
+
+	for i := 0; i < val.NumField(); i++ {
+		field := val.Field(i)
+		fieldName := typ.Field(i).Name
+		result[fieldName] = field.Interface()
+	}
+
+	return result
 }

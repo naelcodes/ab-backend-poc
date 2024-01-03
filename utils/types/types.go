@@ -7,10 +7,9 @@ type BaseEntity struct {
 }
 
 type GetQueryParams struct {
-	PageSize   *int      `query:"page-size"`
-	PageNumber *int      `query:"page"`
-	Fields     *[]string `query:"fields"`
-	Embed      *string   `query:"embed"`
+	PageSize   *int    `query:"page-size"`
+	PageNumber *int    `query:"page"`
+	Embed      *string `query:"embed"`
 }
 
 type DtoValidator interface {

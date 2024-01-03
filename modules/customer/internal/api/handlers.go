@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"neema.co.za/rest/utils/dto"
 	CustomErrors "neema.co.za/rest/utils/errors"
 	"neema.co.za/rest/utils/logger"
+	"neema.co.za/rest/utils/payloads"
 	"neema.co.za/rest/utils/types"
 )
 
@@ -46,10 +46,10 @@ func (api *Api) GetCustomerHandler(c *fiber.Ctx) error {
 
 func (api *Api) CreateCustomerHandler(c *fiber.Ctx) error {
 
-	createCustomerDTO := c.Locals("payload").(*dto.CreateCustomerDTO)
-	logger.Info(fmt.Sprintf("CreateCustomerDTO: %v", createCustomerDTO))
+	CreateCustomerPayload := c.Locals("payload").(*payloads.CreateCustomerPayload)
+	logger.Info(fmt.Sprintf("CreateCustomerDTO: %v", CreateCustomerPayload))
 
-	newCustomerDTO, err := api.Service.CreateCustomerService(createCustomerDTO)
+	newCustomerDTO, err := api.Service.CreateCustomerService(*CreateCustomerPayload)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error creating customer DTO: %v", err))
 		return err

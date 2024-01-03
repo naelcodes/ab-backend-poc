@@ -5,31 +5,34 @@ import (
 
 	"neema.co.za/rest/modules/customer/internal/domain"
 
-	"neema.co.za/rest/utils/dto"
 	"neema.co.za/rest/utils/logger"
+	"neema.co.za/rest/utils/models"
+	"neema.co.za/rest/utils/payloads"
 	"neema.co.za/rest/utils/types"
 )
 
-func (s *Service) GetAllCustomerService(queryParams *types.GetQueryParams) (*dto.GetAllCustomersDTO, error) {
+func (s *Service) GetAllCustomerService(queryParams *types.GetQueryParams) (*types.GetAllDTO[any], error) {
 	logger.Info("Getting all customers")
 	return s.Repository.GetAll(queryParams)
 }
 
-func (s *Service) GetCustomerService(id int) (*dto.GetCustomerDTO, error) {
+func (s *Service) GetCustomerService(id int) (*models.Customer, error) {
 	logger.Info("Getting customer")
 	return s.Repository.GetById(id)
 }
 
-func (s *Service) CreateCustomerService(createCustomerDTO *dto.CreateCustomerDTO) (*dto.GetCustomerDTO, error) {
-	logger.Info(fmt.Sprintf("Creating customer: %v", createCustomerDTO))
-	customer := domain.NewCustomerBuilder().
-		SetCustomerName(createCustomerDTO.CustomerName).
-		SetAlias(createCustomerDTO.Alias).
-		SetAbKey().
-		SetTmcClientNumber(createCustomerDTO.TmcClientNumber).
-		SetAccountNumber(createCustomerDTO.AccountNumber).
-		SetState(createCustomerDTO.State).
-		Build()
+func (s *Service) CreateCustomerService(payload payloads.CreateCustomerPayload) (*models.Customer, error) {
+	logger.Info(fmt.Sprintf("Creating customer: %v", payload))
+	domain := domain.NewCustomerDomain()
 
-	return s.Repository.Save(customer)
+	domain.GetCustomerBuilder().
+		SetCustomerName(payload.CustomerName).
+		SetAlias(payload.Alias).
+		SetAbKey().
+		SetTmcClientNumber(payload.TmcClientNumber).
+		SetAccountNumber(payload.AccountNumber).
+		SetState(payload.State).
+		SetDefaults()
+
+	return s.Repository.Save(domain.GetCustomer())
 }

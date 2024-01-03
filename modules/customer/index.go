@@ -2,8 +2,8 @@ package customer
 
 import (
 	. "neema.co.za/rest/modules/customer/internal/api"
-	"neema.co.za/rest/utils/dto"
 	"neema.co.za/rest/utils/middlewares"
+	"neema.co.za/rest/utils/payloads"
 )
 
 func GetModule() *Module {
@@ -16,6 +16,6 @@ func GetModule() *Module {
 func handleRoutes(api *Api) {
 	api.Get("", api.GetAllCustomerHandler)
 	api.Get("/:id", api.GetCustomerHandler)
-	api.Post("", middlewares.PayloadValidator(new(dto.CreateCustomerDTO)), api.CreateCustomerHandler)
+	api.Post("", middlewares.PayloadValidator(new(payloads.CreateCustomerPayload)), api.CreateCustomerHandler)
 
 }
