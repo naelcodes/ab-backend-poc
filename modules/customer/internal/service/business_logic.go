@@ -11,7 +11,7 @@ import (
 	"neema.co.za/rest/utils/types"
 )
 
-func (s *Service) GetAllCustomerService(queryParams *types.GetQueryParams) (*types.GetAllDTO[any], error) {
+func (s *Service) GetAllCustomerService__(queryParams *types.GetQueryParams) (*types.GetAllDTO[[]*models.Customer], error) {
 	logger.Info("Getting all customers")
 	return s.Repository.GetAll(queryParams)
 }

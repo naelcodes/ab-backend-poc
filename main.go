@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 
 	logger "neema.co.za/rest/utils/logger"
+	"neema.co.za/rest/utils/managers"
 
 	bookingModule "neema.co.za/rest/modules/booking"
 	customerModule "neema.co.za/rest/modules/customer"
@@ -40,5 +41,24 @@ func main() {
 
 	routerV1.Mount("/invoices", invoiceModule.GetModule().App)
 	routerV1.Mount("/payments", paymentModule.GetModule().App)
+
+	dependencyManager := managers.NewDependencyManager()
+	dependencyManager.Init(customerModule.GetModule(),
+		bookingModule.GetModule(),
+		invoiceModule.GetModule(),
+		paymentModule.GetModule())
+
+	logger.Info(fmt.Sprintf("Dependencies: %v", dependencyManager.GetAll()))
+
+	// pageNumber := 0
+	// pageSize := 10
+	// queryParams := types.GetQueryParams{
+	// 	PageSize:   &pageSize,
+	// 	PageNumber: &pageNumber,
+	// }
+
+	// GetAllCustomerService := dependencyManager.Get("GetAllCustomerService")
+	// result := GetAllCustomerService(&queryParams)[0].(*types.GetAllDTO[[]*models.Customer]).Data[0]
+	// logger.Info(fmt.Sprintf("Method Call: %v", result))
 
 }

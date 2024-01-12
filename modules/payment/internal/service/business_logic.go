@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"neema.co.za/rest/modules/payment/internal/domain"
+	"neema.co.za/rest/utils/managers"
 	"neema.co.za/rest/utils/models"
 	"neema.co.za/rest/utils/payloads"
 
 	CustomErrors "neema.co.za/rest/utils/errors"
 	"neema.co.za/rest/utils/logger"
-	. "neema.co.za/rest/utils/transaction-manager"
 	"neema.co.za/rest/utils/types"
 )
 
@@ -45,7 +45,7 @@ func (s *Service) CreatePaymentService(payload payloads.CreatePaymentPayload) (*
 		return nil, err
 	}
 
-	TransactionManager := NewTransactionManager(s.Engine)
+	TransactionManager := managers.NewTransactionManager(s.Engine)
 	err = TransactionManager.Begin()
 
 	if err != nil {

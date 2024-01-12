@@ -27,7 +27,7 @@ func (r *Repository) Count() (int64, error) {
 	return totalRowCount, nil
 
 }
-func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO[any], error) {
+func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO[[]*models.Customer], error) {
 
 	customerQuery := r.Where("tag = ?", tag)
 	customers := make([]*models.Customer, 0)
@@ -64,7 +64,7 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO
 
 	logger.Info(fmt.Sprintf("Found %v customers", len(customers)))
 
-	getAllCustomersDTO := new(types.GetAllDTO[any])
+	getAllCustomersDTO := new(types.GetAllDTO[[]*models.Customer])
 	getAllCustomersDTO.Data = customers
 	getAllCustomersDTO.TotalRowCount = int(totalRowCount)
 	getAllCustomersDTO.PageNumber = pageNumber

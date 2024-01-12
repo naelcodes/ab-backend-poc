@@ -13,7 +13,7 @@ import (
 func (api *Api) GetAllCustomerHandler(c *fiber.Ctx) error {
 
 	queryParams := c.Locals("queryParams").(*types.GetQueryParams)
-	customersDTO, err := api.Service.GetAllCustomerService(queryParams)
+	customersDTO, err := api.Service.GetAllCustomerService__(queryParams)
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error getting all customers DTO: %v", err))
