@@ -1,15 +1,14 @@
 package managers
 
 import (
+	"context"
 	"fmt"
 	"reflect"
-	"regexp"
-	"strings"
+
+	"neema.co.za/rest/utils/logger"
 )
 
-type Dependency func(args ...any) []any
-
-const DependencyIndicator = "__"
+type Dependency func(context.Context) (any, error)
 
 type DependencyManager struct {
 	dependencies map[string]Dependency
@@ -25,19 +24,15 @@ func (d *DependencyManager) Get(key string) Dependency {
 	return d.dependencies[key]
 }
 
-func (d *DependencyManager) Init(modules ...any) {
-	for i := 0; i < len(modules); i++ {
-		ModuleReflectedValue := reflect.ValueOf(modules[i]).Elem()
+func (d *DependencyManager) Init(moduleExports ...any) {
+	for i := 0; i < len(moduleExports); i++ {
+		ModuleReflectedValue := reflect.ValueOf(moduleExports[i])
 		moduleReflectedType := ModuleReflectedValue.Type()
-
 		for j := 0; j < moduleReflectedType.NumMethod(); j++ {
-
 			method := moduleReflectedType.Method(j)
-			//logger.Info(fmt.Sprintf("Method Name: %v", method.Name))
-			matched, _ := regexp.MatchString(fmt.Sprintf(`\w+%v$`, DependencyIndicator), method.Name)
-			if matched {
-				d.dependencies[strings.Replace(method.Name, DependencyIndicator, "", -1)] = createFunction(ModuleReflectedValue.MethodByName(method.Name))
-			}
+			logger.Info(fmt.Sprintf(" Exported function Name: %v", method.Name))
+			d.dependencies[method.Name] = createFunction(ModuleReflectedValue.MethodByName(method.Name))
+
 		}
 	}
 }
@@ -46,21 +41,10 @@ func (d *DependencyManager) GetAll() map[string]Dependency {
 	return d.dependencies
 }
 
-func createFunction(reflectedMethod reflect.Value) func(args ...any) []any {
-	return func(args ...any) []any {
-		rArgs := []reflect.Value{}
-		for i := 0; i < len(args); i++ {
-			rArgs = append(rArgs, reflect.ValueOf(args[i]))
-		}
-
-		rResults := reflectedMethod.Call(rArgs)
-
-		results := []any{}
-
-		for i := 0; i < len(rResults); i++ {
-			results = append(results, rResults[i].Interface())
-		}
-		return results
+func createFunction(reflectedMethod reflect.Value) Dependency {
+	return func(context context.Context) (any, error) {
+		rResults := reflectedMethod.Call([]reflect.Value{reflect.ValueOf(context)})
+		return rResults[0].Interface(), rResults[1].Interface().(error)
 
 	}
 }

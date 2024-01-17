@@ -9,9 +9,10 @@ import (
 	"neema.co.za/rest/modules/imputation/internal/service"
 	"neema.co.za/rest/utils/app"
 	"neema.co.za/rest/utils/database"
+	"neema.co.za/rest/utils/managers"
 )
 
-func BuildApi() *api.Api {
+func BuildApi(dependencyManager *managers.DependencyManager) *api.Api {
 	panic(wire.Build(
 		database.GetDatabase,
 		app.NewFiberApp,

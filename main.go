@@ -10,10 +10,11 @@ import (
 	logger "neema.co.za/rest/utils/logger"
 	"neema.co.za/rest/utils/managers"
 
-	bookingModule "neema.co.za/rest/modules/booking"
-	customerModule "neema.co.za/rest/modules/customer"
-	invoiceModule "neema.co.za/rest/modules/invoice"
-	paymentModule "neema.co.za/rest/modules/payment"
+	BookingModule "neema.co.za/rest/modules/booking"
+	CustomerModule "neema.co.za/rest/modules/customer"
+	ImputationModule "neema.co.za/rest/modules/imputation"
+	InvoiceModule "neema.co.za/rest/modules/invoice"
+	PaymentModule "neema.co.za/rest/modules/payment"
 	App "neema.co.za/rest/utils/app"
 )
 
@@ -36,29 +37,30 @@ func main() {
 
 	routerV1 := app.Group(os.Getenv("API_V1_BASE_PATH"))
 
-	routerV1.Mount("/customers", customerModule.GetModule().App)
-	routerV1.Mount("/travel-items", bookingModule.GetModule().App)
-
-	routerV1.Mount("/invoices", invoiceModule.GetModule().App)
-	routerV1.Mount("/payments", paymentModule.GetModule().App)
-
 	dependencyManager := managers.NewDependencyManager()
-	dependencyManager.Init(customerModule.GetModule(),
-		bookingModule.GetModule(),
-		invoiceModule.GetModule(),
-		paymentModule.GetModule())
+
+	customerModule := CustomerModule.GetModule(dependencyManager)
+	invoiceModule := InvoiceModule.GetModule(dependencyManager)
+	paymentModule := PaymentModule.GetModule(dependencyManager)
+	bookingModule := BookingModule.GetModule(dependencyManager)
+	imputationModule := ImputationModule.GetModule(dependencyManager)
+
+	dependencyManager.Init(
+		bookingModule.Exports,
+		customerModule.Exports,
+		invoiceModule.Exports,
+		paymentModule.Exports,
+		imputationModule.Exports,
+	)
 
 	logger.Info(fmt.Sprintf("Dependencies: %v", dependencyManager.GetAll()))
 
-	// pageNumber := 0
-	// pageSize := 10
-	// queryParams := types.GetQueryParams{
-	// 	PageSize:   &pageSize,
-	// 	PageNumber: &pageNumber,
-	// }
+	routerV1.Mount("/customers", customerModule.App)
+	routerV1.Mount("/travel-items", bookingModule.App)
 
-	// GetAllCustomerService := dependencyManager.Get("GetAllCustomerService")
-	// result := GetAllCustomerService(&queryParams)[0].(*types.GetAllDTO[[]*models.Customer]).Data[0]
-	// logger.Info(fmt.Sprintf("Method Call: %v", result))
+	invoiceModule.App.Mount("/imputations", imputationModule.App)
+	routerV1.Mount("/invoices", invoiceModule.App)
+
+	routerV1.Mount("/payments", paymentModule.App)
 
 }

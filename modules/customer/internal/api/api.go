@@ -10,8 +10,9 @@ type Module Api
 type Api struct {
 	*service.Service
 	*fiber.App
+	*Exports
 }
 
 func NewApi(service *service.Service, app *fiber.App) *Api {
-	return &Api{service, app}
+	return &Api{service, app, &Exports{internalService: service}}
 }
