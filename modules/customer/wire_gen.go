@@ -12,15 +12,16 @@ import (
 	"neema.co.za/rest/modules/customer/internal/service"
 	"neema.co.za/rest/utils/app"
 	"neema.co.za/rest/utils/database"
+	"neema.co.za/rest/utils/managers"
 )
 
 // Injectors from wire.go:
 
 // New api handler
-func BuildApi() *api.Api {
+func BuildApi(dependencyManager *managers.DependencyManager) *api.Api {
 	databaseDatabase := database.GetDatabase()
 	repositoryRepository := repository.NewRepository(databaseDatabase)
-	serviceService := service.NewService(repositoryRepository)
+	serviceService := service.NewService(repositoryRepository, dependencyManager)
 	fiberApp := app.NewFiberApp()
 	apiApi := api.NewApi(serviceService, fiberApp)
 	return apiApi

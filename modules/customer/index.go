@@ -2,12 +2,13 @@ package customer
 
 import (
 	. "neema.co.za/rest/modules/customer/internal/api"
+	"neema.co.za/rest/utils/managers"
 	"neema.co.za/rest/utils/middlewares"
 	"neema.co.za/rest/utils/payloads"
 )
 
-func GetModule() *Module {
-	api := BuildApi()
+func GetModule(dependencyManager *managers.DependencyManager) *Module {
+	api := BuildApi(dependencyManager)
 	handleRoutes(api)
 	module := Module(*api) //Module is an alias of Api
 	return &module

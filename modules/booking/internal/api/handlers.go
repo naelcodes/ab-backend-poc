@@ -12,7 +12,7 @@ func (api *Api) GetAllTravelItemsHandler(c *fiber.Ctx) error {
 
 	queryParams := c.Locals("queryParams").(*types.GetQueryParams)
 
-	getAllTravelItemDTO, err := api.Service.GetAllTravelItemsService__(queryParams)
+	getAllTravelItemDTO, err := api.Service.GetAllTravelItemsService(queryParams)
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error getting all travel items DTO: %v", err))
