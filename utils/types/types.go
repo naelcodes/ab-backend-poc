@@ -6,6 +6,8 @@ type BaseEntity struct {
 	Id EID
 }
 
+type KeyType string
+
 type GetQueryParams struct {
 	PageSize   *int    `query:"page-size"`
 	PageNumber *int    `query:"page"`

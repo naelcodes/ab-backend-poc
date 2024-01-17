@@ -7,6 +7,7 @@ import (
 	"neema.co.za/rest/utils/logger"
 	"neema.co.za/rest/utils/models"
 	"neema.co.za/rest/utils/types"
+	"xorm.io/xorm"
 )
 
 func (r *Repository) Count() (int64, error) {
@@ -61,4 +62,19 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO
 		PageSize:      pageSize,
 		PageNumber:    pageNumber,
 	}, nil
+}
+
+func (r *Repository) AddInvoiceToTravelItems(transaction *xorm.Session, invoiceId int, travelItemIds []int) error {
+	logger.Info("Adding invoice to travel item")
+	_, err := transaction.Where("id IN (?)", travelItemIds).Update(&models.TravelItem{
+		Id_invoice: invoiceId,
+		Status:     "invoiced",
+	})
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error adding invoice to travel item: %v", err))
+		return CustomErrors.RepositoryError(fmt.Errorf("error adding invoiceId to travel items: %v", err))
+	}
+
+	return nil
 }
