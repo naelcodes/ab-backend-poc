@@ -24,7 +24,7 @@ func (d *DependencyManager) Get(key string) Dependency {
 	return d.dependencies[key]
 }
 
-func (d *DependencyManager) Init(moduleExports ...any) {
+func (d *DependencyManager) Add(moduleExports ...any) {
 	for i := 0; i < len(moduleExports); i++ {
 		ModuleReflectedValue := reflect.ValueOf(moduleExports[i])
 		moduleReflectedType := ModuleReflectedValue.Type()

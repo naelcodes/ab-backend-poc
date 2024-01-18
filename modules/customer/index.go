@@ -10,7 +10,8 @@ import (
 func GetModule(dependencyManager *managers.DependencyManager) *Module {
 	api := BuildApi(dependencyManager)
 	handleRoutes(api)
-	module := Module(*api) //Module is an alias of Api
+	module := Module(*api)                //Module is an alias of Api
+	dependencyManager.Add(module.Exports) //add exportable functions to dependency manager
 	return &module
 }
 

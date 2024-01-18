@@ -1,14 +1,13 @@
-package api
+package service
 
 import (
 	"context"
 
-	"neema.co.za/rest/modules/booking/internal/service"
 	"xorm.io/xorm"
 )
 
 type Exports struct {
-	internalService *service.Service
+	InternalService *Service
 }
 
 func (e *Exports) BM__AssociateInvoiceToTravelItems(context context.Context) (any, error) {
@@ -16,6 +15,6 @@ func (e *Exports) BM__AssociateInvoiceToTravelItems(context context.Context) (an
 	transaction := context.Value("transaction").(*xorm.Session)
 	invoiceId := context.Value("invoiceId").(int)
 	travelItemIds := context.Value("travelItemIds").([]int)
-	err := e.internalService.AddInvoiceToTravelItems(transaction, invoiceId, travelItemIds)
+	err := e.InternalService.AddInvoiceToTravelItems(transaction, invoiceId, travelItemIds)
 	return nil, err
 }

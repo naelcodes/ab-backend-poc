@@ -45,22 +45,12 @@ func main() {
 	bookingModule := BookingModule.GetModule(dependencyManager)
 	imputationModule := ImputationModule.GetModule(dependencyManager)
 
-	dependencyManager.Init(
-		bookingModule.Exports,
-		customerModule.Exports,
-		invoiceModule.Exports,
-		paymentModule.Exports,
-		imputationModule.Exports,
-	)
-
 	logger.Info(fmt.Sprintf("Dependencies: %v", dependencyManager.GetAll()))
 
 	routerV1.Mount("/customers", customerModule.App)
 	routerV1.Mount("/travel-items", bookingModule.App)
-
 	invoiceModule.App.Mount("/imputations", imputationModule.App)
 	routerV1.Mount("/invoices", invoiceModule.App)
-
 	routerV1.Mount("/payments", paymentModule.App)
 
 }
