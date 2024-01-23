@@ -10,3 +10,8 @@ func (s *Service) GetAllTravelItemsService(queryParams *types.GetQueryParams) (*
 	logger.Info("Getting all travel items")
 	return s.Repository.GetAll(queryParams)
 }
+
+// func (s *Service) AddInvoiceToTravelItemService(transaction *xorm.Session, invoiceId int, travelItemIds []int) error {
+// 	logger.Info("Adding invoice to travel item")
+// 	return s.Repository.AddInvoiceToTravelItem(transaction, invoiceId, travelItemIds)
+// }

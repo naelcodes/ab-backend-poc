@@ -11,21 +11,25 @@ import (
 
 type PaymentDomain struct {
 	payment *models.Payment
-	builder *PaymentBuilder
 	errors  error
 }
 
-func NewPaymentDomain() *PaymentDomain {
-	domain := &PaymentDomain{payment: &models.Payment{}}
+func NewPaymentDomain(payment *models.Payment) *PaymentDomain {
+	domain := &PaymentDomain{payment: payment}
 	return domain
 
 }
 
-func (domain *PaymentDomain) GetPaymentBuilder() *PaymentBuilder {
-	if domain.builder == nil {
-		domain.builder = NewPaymentBuilder(domain.payment)
-	}
-	return domain.builder
+func (domain *PaymentDomain) SetDefaults() {
+	domain.payment.PaymentDate = Helpers.GetCurrentDate()
+	domain.payment.BaseAmount = domain.payment.Amount
+	domain.payment.Status = "open"
+	domain.payment.UsedAmount = 0
+	domain.payment.Type = "customer_payment"
+	domain.payment.IdCurrency = 550
+	domain.payment.IdChartOfAccounts = 39
+	domain.payment.Balance = domain.payment.Amount
+	domain.payment.Tag = "3"
 }
 
 func (domain *PaymentDomain) GetPayment() *models.Payment {

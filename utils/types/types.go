@@ -12,7 +12,7 @@ type GetQueryParams struct {
 	Embed      *string `query:"embed"`
 }
 
-type DtoValidator interface {
+type PayloadValidator interface {
 	Validate() error
 }
 

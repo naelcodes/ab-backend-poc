@@ -27,7 +27,7 @@ func ServiceError(err error, operation string) *CustomError {
 func DomainError(err error) *CustomError {
 	return &CustomError{
 		Err:  err,
-		Type: "DomainError",
+		Type: "Domain Validation Error",
 	}
 }
 

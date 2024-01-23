@@ -61,14 +61,13 @@ func QueryValidator() fiber.Handler {
 	}
 }
 
-func PayloadValidator(dto types.DtoValidator) fiber.Handler {
+func PayloadValidator(payload types.PayloadValidator) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
 		logger.Info(fmt.Sprintf("Validating payload on path: %v/ %v", c.Method(), c.Path()))
 
 		if c.Method() == fiber.MethodPost || c.Method() == fiber.MethodPut || c.Method() == fiber.MethodPatch {
 
-			payload := dto
 			err := c.BodyParser(payload)
 
 			if err != nil {
@@ -85,7 +84,7 @@ func PayloadValidator(dto types.DtoValidator) fiber.Handler {
 	}
 }
 
-func PayloadListValidator(dto []types.DtoValidator) fiber.Handler {
+func PayloadListValidator(dto []types.PayloadValidator) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
 		logger.Info(fmt.Sprintf("Validating payload list on path: %v/ %v", c.Method(), c.Path()))
