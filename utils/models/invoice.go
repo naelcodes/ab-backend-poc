@@ -13,7 +13,7 @@ type Invoice struct {
 	CreditApply   float64 `xorm:"not null 'credit_apply'" json:"creditApply"`
 	Tag           string  `xorm:" not null 'tag' " json:"-"`
 
-	IdCustomer int `xorm:"'id_customer'" json:"idCustomer"`
+	IdCustomer int `xorm:"'id_customer'" json:"idCustomer,omitempty"`
 }
 
 func (*Invoice) TableName() string {

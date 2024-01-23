@@ -8,6 +8,7 @@ import (
 	"neema.co.za/rest/utils/logger"
 	"neema.co.za/rest/utils/models"
 	"neema.co.za/rest/utils/types"
+	"xorm.io/xorm"
 )
 
 const tag = "3"
@@ -18,12 +19,12 @@ const embedCustomerSqlQuery = `
 	    FROM (
 	        SELECT
 	            id,
-	            customer_name,
-	            account_number,
+	            customer_name AS customerName,
+	            account_number as accountNumber,
 	            alias,
-	            ab_key,
+	            ab_key AS abKey,
 	            state,
-	            tmc_client_number
+	            tmc_client_number AS tmcClientNumber
 	        FROM
 	            customer
 	        WHERE
@@ -33,8 +34,8 @@ const invoiceSql = `
 	SELECT
 	    id,
 	    invoice_number,
-	    to_char(creation_date, 'yyyy-mm-dd') AS creation_date,
-	    to_char(due_date, 'yyyy-mm-dd') AS due_date,
+	    to_char(creation_date, 'yyyy-mm-dd') as creation_date,
+	    to_char(due_date, 'yyyy-mm-dd') as due_date,
 	    amount::NUMERIC,
 	    balance::NUMERIC,
 	    credit_apply::NUMERIC,
@@ -45,10 +46,10 @@ const invoiceSql = `
 	        FROM (
 	            SELECT
 	                id,
-	                total_price::NUMERIC,
+	                total_price::NUMERIC AS totalPrice,
 	                itinerary,
-	                traveler_name,
-	                ticket_number
+	                traveler_name AS travelerName,
+	                ticket_number AS ticketNumber
 	            FROM
 	                air_booking
 	            WHERE
@@ -153,13 +154,13 @@ func (r *Repository) GetById(id int, queryParams *types.GetQueryParams) (any, er
 	var result any
 	var invoices = make([]*struct {
 		models.Invoice `xorm:"extends"`
-		TravelItems    []models.TravelItem `xorm:"jsonb 'travelItems'" json:"travelItems"`
+		TravelItems    []models.TravelItem `xorm:"jsonb 'travelItems'" json:"travelItems,omitempty"`
 	}, 0)
 
 	var invoicesWithCustomer = make([]*struct {
 		models.Invoice `xorm:"extends"`
 		Customer       models.Customer     `xorm:"jsonb 'customer'" json:"customer"`
-		TravelItems    []models.TravelItem `xorm:"jsonb 'travelItems'" json:"travelItems"`
+		TravelItems    []models.TravelItem `xorm:"jsonb 'travelItems'" json:"travelItems,omitempty"`
 	}, 0)
 
 	var err error
@@ -236,4 +237,22 @@ func (r *Repository) GetByCustomerId(idCustomer int, queryParams *types.GetQuery
 		PageNumber:    pageNumber,
 	}, nil
 
+}
+
+func (r *Repository) Save(transaction *xorm.Session, invoice *models.Invoice) (*models.Invoice, error) {
+
+	insertSqlCommand := `
+	INSERT INTO invoice (invoice_number, creation_date, due_date, amount, balance, credit_apply, net_amount, base_amount, status, id_customer, tag)
+		VALUES (CONCAT('INV-', NEXTVAL('invoice_sequence')), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+	RETURNING
+		id, invoice_number, to_char(creation_date, 'yyyy-mm-dd') AS creation_date, to_char(due_date, 'yyyy-mm-dd') AS due_date, amount::NUMERIC, balance::NUMERIC, credit_apply::NUMERIC, status, id_customer`
+
+	err := transaction.DB().QueryRow(insertSqlCommand, invoice.CreationDate, invoice.DueDate, invoice.Amount, invoice.Balance, invoice.CreditApply, invoice.NetAmount, invoice.BaseAmount, invoice.Status, invoice.IdCustomer, invoice.Tag).ScanStructByName(invoice)
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error saving invoice: %v", err))
+		return nil, CustomErrors.RepositoryError(fmt.Errorf("error saving invoice: %v", err))
+	}
+
+	return invoice, nil
 }

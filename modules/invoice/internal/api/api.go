@@ -2,16 +2,16 @@ package api
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"neema.co.za/rest/modules/invoice/internal/service"
+	svc "neema.co.za/rest/modules/invoice/internal/service"
 )
 
 type Module Api
 type Api struct {
-	*service.Service
+	*svc.Service
 	*fiber.App
-	*Exports
+	*svc.Exports
 }
 
-func NewApi(service *service.Service, app *fiber.App) *Api {
-	return &Api{service, app, &Exports{internalService: service}}
+func NewApi(service *svc.Service, app *fiber.App) *Api {
+	return &Api{service, app, &svc.Exports{InternalService: service}}
 }

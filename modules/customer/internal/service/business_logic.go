@@ -23,16 +23,9 @@ func (s *Service) GetCustomerService(id int) (*models.Customer, error) {
 
 func (s *Service) CreateCustomerService(payload payloads.CreateCustomerPayload) (*models.Customer, error) {
 	logger.Info(fmt.Sprintf("Creating customer: %v", payload))
-	domain := domain.NewCustomerDomain()
 
-	domain.GetCustomerBuilder().
-		SetCustomerName(payload.CustomerName).
-		SetAlias(payload.Alias).
-		SetAbKey().
-		SetTmcClientNumber(payload.TmcClientNumber).
-		SetAccountNumber(payload.AccountNumber).
-		SetState(payload.State).
-		SetDefaults()
+	domain := domain.NewCustomerDomain(&payload.Customer)
+	domain.SetDefaults()
 
 	return s.Repository.Save(domain.GetCustomer())
 }

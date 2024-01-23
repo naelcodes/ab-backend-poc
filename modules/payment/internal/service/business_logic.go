@@ -26,17 +26,8 @@ func (s *Service) GetPaymentService(id int, queryParams *types.GetQueryParams) (
 func (s *Service) CreatePaymentService(payload payloads.CreatePaymentPayload) (*models.Payment, error) {
 	logger.Info("Creating payment")
 
-	paymentDomain := domain.NewPaymentDomain()
-
-	paymentDomain.GetPaymentBuilder().
-		SetAmount(payload.Amount).
-		SetIdCustomer(payload.IdCustomer).
-		SetPaymentMode(payload.PaymentMode).
-		SetPaymentDate().
-		SetBalance(payload.Amount).
-		SetStatus("open").
-		SetUsedAmount(0).
-		SetDefaults()
+	paymentDomain := domain.NewPaymentDomain(&payload.Payment)
+	paymentDomain.SetDefaults()
 
 	err := paymentDomain.Validate()
 
