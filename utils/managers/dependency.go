@@ -44,7 +44,10 @@ func (d *DependencyManager) GetAll() map[string]Dependency {
 func createFunction(reflectedMethod reflect.Value) Dependency {
 	return func(context context.Context) (any, error) {
 		rResults := reflectedMethod.Call([]reflect.Value{reflect.ValueOf(context)})
-		return rResults[0].Interface(), rResults[1].Interface().(error)
+		if rResults[1].Interface() != nil {
+			return rResults[0].Interface(), rResults[1].Interface().(error)
+		}
+		return rResults[0].Interface(), nil
 
 	}
 }

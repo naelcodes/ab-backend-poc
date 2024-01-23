@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	CustomErrors "neema.co.za/rest/utils/errors"
+	"neema.co.za/rest/utils/helpers"
 	"neema.co.za/rest/utils/logger"
 	"neema.co.za/rest/utils/models"
 	"neema.co.za/rest/utils/types"
@@ -64,12 +65,27 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO
 	}, nil
 }
 
-func (r *Repository) AddInvoiceToTravelItems(transaction *xorm.Session, invoiceId int, travelItemIds []int) error {
+func (r *Repository) GetByIds(ids []int) ([]*models.TravelItem, error) {
+	logger.Info("Getting travel items")
+
+	travelItems := make([]*models.TravelItem, 0)
+
+	err := r.SQL(fmt.Sprintf(`SELECT id,itinerary,traveler_name,ticket_number,CAST(total_price AS numeric) AS total_price,status,id_invoice FROM air_booking WHERE id = ANY(array[%s])`, helpers.GenerateSQLArrayParamString(ids))).Find(&travelItems)
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error getting travel items: %v", err))
+		return nil, CustomErrors.RepositoryError(fmt.Errorf("error getting travel items: %v", err))
+	}
+
+	logger.Info(fmt.Sprintf("Total travel item count: %v", len(travelItems)))
+
+	return travelItems, nil
+}
+
+func (r *Repository) InvoiceTravelItems(transaction *xorm.Session, invoiceId int, travelItemIds []int) error {
 	logger.Info("Adding invoice to travel item")
-	_, err := transaction.Where("id IN (?)", travelItemIds).Update(&models.TravelItem{
-		Id_invoice: invoiceId,
-		Status:     "invoiced",
-	})
+
+	_, err := transaction.DB().Exec(fmt.Sprintf(`UPDATE air_booking SET id_invoice = $1,status = $2 WHERE id = ANY(array[%s])`, helpers.GenerateSQLArrayParamString(travelItemIds)), invoiceId, "invoiced")
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error adding invoice to travel item: %v", err))

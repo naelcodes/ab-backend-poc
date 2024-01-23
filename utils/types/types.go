@@ -6,15 +6,13 @@ type BaseEntity struct {
 	Id EID
 }
 
-type KeyType string
-
 type GetQueryParams struct {
 	PageSize   *int    `query:"page-size"`
 	PageNumber *int    `query:"page"`
 	Embed      *string `query:"embed"`
 }
 
-type DtoValidator interface {
+type PayloadValidator interface {
 	Validate() error
 }
 

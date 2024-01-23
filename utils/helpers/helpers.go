@@ -64,3 +64,7 @@ func StructToMap(input any) map[string]any {
 
 	return result
 }
+
+func GenerateSQLArrayParamString(list []int) string {
+	return strings.Trim(strings.Join(strings.Fields(fmt.Sprint(list)), ","), "[]")
+}
