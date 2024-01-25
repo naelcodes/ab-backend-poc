@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	CustomErrors "neema.co.za/rest/utils/errors"
 	"neema.co.za/rest/utils/logger"
+	"neema.co.za/rest/utils/payloads"
 	"neema.co.za/rest/utils/types"
 )
 
@@ -84,18 +85,18 @@ func PayloadValidator(payload types.PayloadValidator) fiber.Handler {
 	}
 }
 
-func PayloadListValidator(dto []types.PayloadValidator) fiber.Handler {
+func ImputationPayloadValidator() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		payload := []*payloads.ImputationPayload{}
 
 		logger.Info(fmt.Sprintf("Validating payload list on path: %v/ %v", c.Method(), c.Path()))
 
 		if c.Method() == fiber.MethodPost || c.Method() == fiber.MethodPut || c.Method() == fiber.MethodPatch {
 
-			payload := dto
 			err := c.BodyParser(&payload)
 
 			if err != nil {
-				return CustomErrors.ServiceError(err, "Parsing JSON payload list")
+				return CustomErrors.ServiceError(err, "Parsing JSON payload list ### ")
 			}
 
 			if len(payload) == 0 {
