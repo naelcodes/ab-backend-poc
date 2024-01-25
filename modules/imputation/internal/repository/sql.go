@@ -20,14 +20,31 @@ func (r *Repository) GetByInvoiceId(idInvoice int) (any, error) {
 		return nil, CustomErrors.NotFoundError(fmt.Errorf("invoice with id(%v) not found", idInvoice))
 	}
 
-	imputationAmountWithRelatedPaymentsQuery := `SELECT i.amount_apply::numeric,p.id as id,p.number ,to_char(p.date,'yyyy-mm-dd') as date,p.balance::numeric,p.amount::numeric AS amount FROM invoice_payment_received AS i RIGHT OUTER JOIN payment_received AS p ON i.id_payment_received=p.id AND id_invoice= ?  WHERE p.id_customer= ? ORDER BY p.number`
+	imputationAmountWithRelatedPaymentsQuery := `
+		SELECT
+		    i.amount_apply::NUMERIC,
+		    p.id AS id,
+		    p.number,
+		    to_char(p.date, 'yyyy-mm-dd') AS date,
+		    p.balance::NUMERIC,
+		    p.amount::NUMERIC AS amount
+		FROM
+		    invoice_payment_received AS i
+		    RIGHT OUTER JOIN payment_received AS p ON i.id_payment_received = p.id
+		WHERE
+		    p.id_customer = ?
+		    AND ((i.id_invoice = ?
+		            AND i.id_payment_received IS NOT NULL)
+		        OR (p.balance::NUMERIC != 0
+		            AND i.id_invoice IS NULL
+		            AND i.id_payment_received IS NULL))`
 
 	imputationAmountWithRelatedPaymentRecords := make([]*struct {
 		Payment       models.Payment `xorm:"extends" json:"payment"`
 		AmountApplied float64        `xorm:"amount_apply" json:"amountApplied"`
 	}, 0)
 
-	err = r.SQL(imputationAmountWithRelatedPaymentsQuery, idInvoice, invoices[0].IdCustomer).Find(&imputationAmountWithRelatedPaymentRecords)
+	err = r.SQL(imputationAmountWithRelatedPaymentsQuery, invoices[0].IdCustomer, idInvoice).Find(&imputationAmountWithRelatedPaymentRecords)
 
 	if err != nil {
 		return nil, CustomErrors.RepositoryError(fmt.Errorf("error getting imputations of invoice with id(%v) : %v", idInvoice, err))
@@ -35,6 +52,10 @@ func (r *Repository) GetByInvoiceId(idInvoice int) (any, error) {
 
 	if len(imputationAmountWithRelatedPaymentRecords) == 0 {
 		return nil, CustomErrors.NotFoundError(fmt.Errorf("imputations of invoice with id(%v) not found", idInvoice))
+	}
+
+	for i := range imputationAmountWithRelatedPaymentRecords {
+		imputationAmountWithRelatedPaymentRecords[i].Payment.Balance = imputationAmountWithRelatedPaymentRecords[i].Payment.Balance + imputationAmountWithRelatedPaymentRecords[i].AmountApplied
 	}
 
 	data := new(struct {

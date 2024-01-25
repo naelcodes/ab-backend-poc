@@ -31,19 +31,28 @@ func (api *Api) GetImputationsHandler(c *fiber.Ctx) error {
 }
 
 func (api *Api) ApplyImputationsHandler(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	idInvoice, err := c.ParamsInt("id")
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error parsing id: %v", err))
 		return CustomErrors.ServiceError(err, "parsing id")
 	}
 
-	logger.Info(fmt.Sprintf("params Id: %v", id))
+	logger.Info(fmt.Sprintf("params Id: %v", idInvoice))
 
 	payload := c.Locals("payload").([]*payloads.ImputationPayload)
 
-	// logic
+	insertedCount, UpdatedCount, deletedCount, err := api.Service.ApplyImputationsService(idInvoice, payload)
 
-	return c.Status(fiber.StatusOK).JSON(payload)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error applying imputations: %v", err))
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Inserted Imputation Count": insertedCount,
+		"Updated Imputation Count":  UpdatedCount,
+		"Deleted Imputation Count":  deletedCount,
+	})
 
 }
