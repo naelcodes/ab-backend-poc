@@ -1,10 +1,9 @@
-package invoice
+package imputation
 
 import (
-	. "neema.co.za/rest/modules/invoice/internal/api"
+	. "neema.co.za/rest/modules/imputation/internal/api"
 	"neema.co.za/rest/utils/managers"
 	"neema.co.za/rest/utils/middlewares"
-	"neema.co.za/rest/utils/payloads"
 )
 
 func GetModule(dependencyManager *managers.DependencyManager) *Module {
@@ -16,8 +15,7 @@ func GetModule(dependencyManager *managers.DependencyManager) *Module {
 }
 
 func handleRoutes(api *Api) {
-	api.Get("", api.GetAllInvoiceHandler)
-	api.Get("/:id", api.GetInvoiceHandler)
-	api.Post("", middlewares.PayloadValidator(new(payloads.CreateInvoicePayload)), api.CreateInvoiceHandler)
+	api.Get("/:id/imputations", api.GetImputationsHandler)
+	api.Post("/:id/imputations", middlewares.ImputationPayloadValidator(), api.ApplyImputationsHandler)
 
 }
