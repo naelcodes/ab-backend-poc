@@ -45,7 +45,7 @@ func main() {
 	bookingModule := BookingModule.GetModule(dependencyManager)
 	imputationModule := ImputationModule.GetModule(dependencyManager)
 
-	logger.Info(fmt.Sprintf("Dependencies: %v", dependencyManager.GetAll()))
+	logger.Info(fmt.Sprintf("Dependencies Count: %v", len(dependencyManager.GetAll())))
 
 	routerV1.Mount("/customers", customerModule.App)
 	routerV1.Mount("/travel-items", bookingModule.App)

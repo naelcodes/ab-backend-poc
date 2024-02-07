@@ -176,3 +176,38 @@ func (r *Repository) Save(transaction *xorm.Session, payment *models.Payment) (*
 	}
 	return paymentRecord.(*models.Payment), nil
 }
+
+func (r *Repository) CheckPaymentsOwnership(idCustomer int, paymentIds []int) error {
+
+	paymentCount, err := r.Where("tag = ? AND id_customer = ?", tag, idCustomer).In("id", paymentIds).Count(new(models.Payment))
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error checking payment ownership: %v", err))
+		return CustomErrors.RepositoryError(fmt.Errorf("error checking payment ownership: %v", err))
+	}
+
+	if paymentCount != int64(len(paymentIds)) {
+		logger.Error(fmt.Sprintf("paymentCounts: %v - paymentIdsCount %v", paymentCount, len(paymentIds)))
+		return CustomErrors.NotFoundError(fmt.Errorf("some payments are not owned by the customer"))
+	}
+
+	return nil
+
+}
+
+func (r *Repository) Update(transaction *xorm.Session, payment *models.Payment) error {
+
+	updateCount, err := transaction.ID(payment.Id).Update(payment)
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error updating payment: %v", err))
+		return CustomErrors.RepositoryError(fmt.Errorf("error updating payment: %v", err))
+	}
+
+	if updateCount == 0 {
+		logger.Error(fmt.Sprintf("Error updating payment: %v", err))
+		return CustomErrors.NotFoundError(fmt.Errorf("payment record not found"))
+	}
+	return nil
+
+}

@@ -29,6 +29,21 @@ const embedCustomerSqlQuery = `
 	            customer
 	        WHERE
 	            id = invoice.id_customer) AS customer) AS customer`
+const embedTravelItemsSqlQuery = ` 
+	(
+	SELECT
+		jsonb_agg(travelItems)
+	FROM (
+		SELECT
+			id,
+			total_price::NUMERIC AS totalPrice,
+			itinerary,
+			traveler_name AS travelerName,
+			ticket_number AS ticketNumber
+		FROM
+			air_booking
+		WHERE
+			id_invoice = invoice.id) AS travelItems) AS travelItems`
 
 const invoiceSql = `
 	SELECT
@@ -39,21 +54,8 @@ const invoiceSql = `
 	    amount::NUMERIC,
 	    balance::NUMERIC,
 	    credit_apply::NUMERIC,
-	    status,
-	    (
-	        SELECT
-	            jsonb_agg(travelItems)
-	        FROM (
-	            SELECT
-	                id,
-	                total_price::NUMERIC AS totalPrice,
-	                itinerary,
-	                traveler_name AS travelerName,
-	                ticket_number AS ticketNumber
-	            FROM
-	                air_booking
-	            WHERE
-	                id_invoice = invoice.id) AS travelItems) AS travelItems`
+	    status
+	   `
 
 func (r *Repository) Count() (int64, error) {
 	logger.Info("Counting invoices")
@@ -73,7 +75,7 @@ func (r *Repository) Count() (int64, error) {
 func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO[any], error) {
 
 	embedCustomer := false
-	invoiceQuery := invoiceSql
+	invoiceQuery := invoiceSql + "," + embedTravelItemsSqlQuery
 	totalRowCount, err := r.Count()
 
 	if err != nil {
@@ -134,10 +136,14 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO
 
 }
 
-func (r *Repository) GetById(id int, queryParams *types.GetQueryParams) (any, error) {
+func (r *Repository) GetById(id int, queryParams *types.GetQueryParams, embedTravelItems bool) (any, error) {
 
 	embedCustomer := false
 	invoiceQuery := invoiceSql
+
+	if embedTravelItems {
+		invoiceQuery = invoiceQuery + "," + embedTravelItemsSqlQuery
+	}
 
 	if queryParams != nil {
 		if queryParams.Embed != nil && *queryParams.Embed == "customer" {
@@ -147,28 +153,45 @@ func (r *Repository) GetById(id int, queryParams *types.GetQueryParams) (any, er
 			invoiceQuery = invoiceQuery + ",id_customer"
 		}
 
+	} else {
+		invoiceQuery = invoiceQuery + ",id_customer"
 	}
 
 	invoiceQuery = invoiceQuery + " FROM invoice WHERE id = ?"
 
 	var result any
-	var invoices = make([]*struct {
-		models.Invoice `xorm:"extends"`
-		TravelItems    []models.TravelItem `xorm:"jsonb 'travelItems'" json:"travelItems,omitempty"`
-	}, 0)
-
-	var invoicesWithCustomer = make([]*struct {
-		models.Invoice `xorm:"extends"`
-		Customer       models.Customer     `xorm:"jsonb 'customer'" json:"customer"`
-		TravelItems    []models.TravelItem `xorm:"jsonb 'travelItems'" json:"travelItems,omitempty"`
-	}, 0)
-
 	var err error
 
-	if embedCustomer {
-		err = r.SQL(invoiceQuery, id).Find(&invoicesWithCustomer)
-		result = invoicesWithCustomer
+	if embedTravelItems && !embedCustomer {
+		var invoices = make([]*struct {
+			models.Invoice `xorm:"extends"`
+			TravelItems    []models.TravelItem `xorm:"jsonb 'travelItems'" json:"travelItems,omitempty"`
+		}, 0)
+
+		err = r.SQL(invoiceQuery, id).Find(&invoices)
+		result = invoices
+
+	} else if !embedTravelItems && embedCustomer {
+		var invoices = make([]*struct {
+			models.Invoice `xorm:"extends"`
+			Customer       models.Customer `xorm:"jsonb 'customer'" json:"customer"`
+		}, 0)
+
+		err = r.SQL(invoiceQuery, id).Find(&invoices)
+		result = invoices
+
+	} else if embedTravelItems && embedCustomer {
+		var invoices = make([]*struct {
+			models.Invoice `xorm:"extends"`
+			Customer       models.Customer     `xorm:"jsonb 'customer'" json:"customer"`
+			TravelItems    []models.TravelItem `xorm:"jsonb 'travelItems'" json:"travelItems,omitempty"`
+		}, 0)
+
+		err = r.SQL(invoiceQuery, id).Find(&invoices)
+		result = invoices
+
 	} else {
+		var invoices = []*models.Invoice{}
 		err = r.SQL(invoiceQuery, id).Find(&invoices)
 		result = invoices
 	}
@@ -255,4 +278,22 @@ func (r *Repository) Save(transaction *xorm.Session, invoice *models.Invoice) (*
 	}
 
 	return invoice, nil
+}
+
+func (r *Repository) Update(transaction *xorm.Session, invoice *models.Invoice) error {
+
+	updateCount, err := transaction.ID(invoice.Id).Update(invoice)
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error updating invoice: %v", err))
+		return CustomErrors.RepositoryError(fmt.Errorf("error updating invoice: %v", err))
+	}
+
+	if updateCount == 0 {
+		logger.Error(fmt.Sprintf("Error updating invoice: %v", err))
+		return CustomErrors.NotFoundError(fmt.Errorf("invoice record not found"))
+	}
+
+	return nil
+
 }

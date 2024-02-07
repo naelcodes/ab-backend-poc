@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 
-	"neema.co.za/rest/modules/invoice/internal/domain"
+	"neema.co.za/rest/utils/domains"
 	CustomErrors "neema.co.za/rest/utils/errors"
 	"neema.co.za/rest/utils/logger"
 	"neema.co.za/rest/utils/managers"
@@ -20,7 +20,7 @@ func (s *Service) GetAllInvoiceService(queryParams *types.GetQueryParams) (*type
 
 func (s *Service) GetInvoiceService(id int, queryParams *types.GetQueryParams) (any, error) {
 	logger.Info("Getting invoice")
-	return s.Repository.GetById(id, queryParams)
+	return s.Repository.GetById(id, queryParams, false)
 }
 
 func (s *Service) CreateInvoiceService(payload payloads.CreateInvoicePayload) (*models.Invoice, error) {
@@ -44,7 +44,7 @@ func (s *Service) CreateInvoiceService(payload payloads.CreateInvoicePayload) (*
 		invoiceAmount += travelItem.TotalPrice
 	}
 
-	invoiceDomain := domain.NewInvoiceDomain(&payload.Invoice)
+	invoiceDomain := domains.NewInvoiceDomain(&payload.Invoice)
 	invoiceDomain.GetInvoice().Amount = invoiceAmount
 	invoiceDomain.SetDefaults()
 
