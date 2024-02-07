@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 
-	"neema.co.za/rest/modules/payment/internal/domain"
+	"neema.co.za/rest/utils/domains"
 	"neema.co.za/rest/utils/managers"
 	"neema.co.za/rest/utils/models"
 	"neema.co.za/rest/utils/payloads"
@@ -26,7 +26,7 @@ func (s *Service) GetPaymentService(id int, queryParams *types.GetQueryParams) (
 func (s *Service) CreatePaymentService(payload payloads.CreatePaymentPayload) (*models.Payment, error) {
 	logger.Info("Creating payment")
 
-	paymentDomain := domain.NewPaymentDomain(&payload.Payment)
+	paymentDomain := domains.NewPaymentDomain(&payload.Payment)
 	paymentDomain.SetDefaults()
 
 	err := paymentDomain.Validate()

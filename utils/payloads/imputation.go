@@ -7,7 +7,7 @@ import (
 )
 
 type ImputationPayload struct {
-	IdPayment     float64 `json:"idPayment"`
+	IdPayment     int     `json:"idPayment"`
 	AmountApplied float64 `json:"amountApplied"`
 }
 

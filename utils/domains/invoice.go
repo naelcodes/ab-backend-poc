@@ -1,14 +1,13 @@
-package domain
+package domains
 
 import (
 	"errors"
 	"fmt"
 	"time"
 
+	CustomErrors "neema.co.za/rest/utils/errors"
 	"neema.co.za/rest/utils/helpers"
 	"neema.co.za/rest/utils/models"
-
-	CustomErrors "neema.co.za/rest/utils/errors"
 )
 
 type InvoiceDomain struct {
@@ -43,9 +42,6 @@ func (domain *InvoiceDomain) CheckDates() error {
 	return nil
 }
 func (domain *InvoiceDomain) ApplyImputation(imputedAmount float64) error {
-	if domain.invoice.Status == "paid" {
-		return CustomErrors.DomainError(fmt.Errorf("imputation can't be applied, invoice is already paid"))
-	}
 
 	domain.invoice.CreditApply += helpers.RoundDecimalPlaces(imputedAmount, 2)
 	err := domain.CalculateBalance()

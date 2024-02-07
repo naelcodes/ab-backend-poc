@@ -1,4 +1,4 @@
-package domain
+package domains
 
 import (
 	"neema.co.za/rest/utils/helpers"
