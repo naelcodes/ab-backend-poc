@@ -1,0 +1,7 @@
+go 1.22.0
+
+use (
+	./casbin-poc
+	./casdoor-poc
+	./rest-api
+)
