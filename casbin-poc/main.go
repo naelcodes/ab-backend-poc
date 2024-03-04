@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	enforcer, err := casbin.NewEnforcer("./modules/casbin-poc/model.conf", "./modules/casbin-poc/policy.csv")
+	enforcer, err := casbin.NewEnforcer("./casbin-poc/model.conf", "./casbin-poc/policy.csv")
 
 	if err != nil {
 		panic(fmt.Errorf("failed to create enforcer: %s", err))

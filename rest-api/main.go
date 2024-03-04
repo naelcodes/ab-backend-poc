@@ -1,4 +1,3 @@
-// main.go
 package main
 
 import (
@@ -21,7 +20,7 @@ import (
 func init() {
 	logger.Info("Loading environment variables")
 
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		logger.Error(fmt.Sprintf("error loading .env file - err : %v", err))
 	}
 

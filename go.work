@@ -1,3 +1,7 @@
 go 1.22.0
 
-use ./modules/casbin-poc
+use (
+	./casbin-poc
+	./casdoor-poc
+	./rest-api
+)

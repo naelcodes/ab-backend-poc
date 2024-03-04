@@ -1,0 +1,17 @@
+package components
+
+templ Root(content templ.Component) {
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+			<title>Casdoor POC</title>
+		</head>
+		<!--	<body hx-get={ route } hx-trigger="load" hx-swap="innerHTML"></body> -->
+		<body>
+			@content
+		</body>
+	</html>
+}
