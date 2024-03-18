@@ -11,5 +11,6 @@ type Service struct {
 }
 
 func NewService(repository *repository.Repository, dependencyManager *managers.DependencyManager) *Service {
+
 	return &Service{repository, &Imports{dependencyManager}}
 }
