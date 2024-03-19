@@ -3,6 +3,8 @@ package auth
 import (
 	. "neema.co.za/rest/modules/auth/internal/api"
 	"neema.co.za/rest/utils/managers"
+	"neema.co.za/rest/utils/middlewares"
+	"neema.co.za/rest/utils/payloads"
 )
 
 func GetModule(dependencyManager *managers.DependencyManager) *Module {
@@ -14,11 +16,12 @@ func GetModule(dependencyManager *managers.DependencyManager) *Module {
 }
 
 func handleRoutes(api *Api) {
-	api.Post("", api.EmailSignInHandler)
-	api.Post("/signup", api.EmailSignUpHandler)
-	api.Post("/email-verification", api.EmailVerificationHandler)
+	api.Post("/signin", middlewares.PayloadValidator(new(payloads.AuthSignInPayload)), api.EmailSignInHandler)
+	api.Post("/signup", middlewares.PayloadValidator(new(payloads.AuthSignUpPayload)), api.EmailSignUpHandler)
+	api.Post("/verification/:code", api.CodeVerificationHandler)
 	api.Get("/facebook", api.FacebookAuthHandler)
 	api.Get("/facebook/redirect", api.FacebookAuthRedirectHandler)
 	api.Get("/google", api.GoogleAuthHandler)
 	api.Get("/google/redirect", api.GoogleAuthRedirectHandler)
+	//api.Post("/add-password")
 }

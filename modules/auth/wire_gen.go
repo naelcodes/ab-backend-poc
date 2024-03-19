@@ -10,20 +10,24 @@ import (
 	"neema.co.za/rest/modules/auth/internal/api"
 	"neema.co.za/rest/modules/auth/internal/repository"
 	"neema.co.za/rest/modules/auth/internal/service"
+	"neema.co.za/rest/modules/auth/internal/utils/providers"
+	"neema.co.za/rest/modules/auth/internal/utils/sdk"
+	"neema.co.za/rest/modules/auth/internal/utils/sessions"
 	"neema.co.za/rest/utils/app"
+	"neema.co.za/rest/utils/database"
 	"neema.co.za/rest/utils/managers"
-	"neema.co.za/rest/utils/providers"
-	"neema.co.za/rest/utils/sdk"
 )
 
 // Injectors from wire.go:
 
 func BuildApi(dependencyManager *managers.DependencyManager) *api.Api {
-	repositoryRepository := repository.NewRepository()
+	redisStore := database.GetRedisStore()
+	repositoryRepository := repository.NewRepository(redisStore)
 	casdoorSDK := sdk.NewCasdoorSdk()
 	facebookProvider := providers.NewFacebookProvider()
 	googleProvider := providers.NewGoogleProvider()
-	serviceService := service.NewService(repositoryRepository, dependencyManager, casdoorSDK, facebookProvider, googleProvider)
+	appSessionStore := sessions.NewAppSessionStore()
+	serviceService := service.NewService(repositoryRepository, dependencyManager, casdoorSDK, facebookProvider, googleProvider, appSessionStore)
 	fiberApp := app.NewFiberApp()
 	apiApi := api.NewApi(serviceService, fiberApp)
 	return apiApi

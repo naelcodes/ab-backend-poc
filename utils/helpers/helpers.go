@@ -68,3 +68,8 @@ func StructToMap(input any) map[string]any {
 func GenerateSQLArrayParamString(list []int) string {
 	return strings.Trim(strings.Join(strings.Fields(fmt.Sprint(list)), ","), "[]")
 }
+
+func GenerateRandomCode() int {
+	rand.New(rand.NewSource(time.Now().UnixNano()))
+	return rand.Intn(900000) + 100000
+}

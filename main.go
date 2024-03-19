@@ -48,11 +48,13 @@ func main() {
 
 	logger.Info(fmt.Sprintf("Dependencies Count: %v", len(dependencyManager.GetAll())))
 
-	routerV1.Mount("/auth", authModule.App)
+	//logger.Info(fmt.Sprintf("API V1 Base Path: %v", len(app.GetRoutes())))
+
 	routerV1.Mount("/customers", customerModule.App)
 	routerV1.Mount("/travel-items", bookingModule.App)
 	invoiceModule.App.Mount("", imputationModule.App)
 	routerV1.Mount("/invoices", invoiceModule.App)
 	routerV1.Mount("/payments", paymentModule.App)
+	routerV1.Mount("/auth", authModule.App)
 
 }
