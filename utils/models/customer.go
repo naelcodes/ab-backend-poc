@@ -11,7 +11,7 @@ type Customer struct {
 	AbKey           string `xorm:"not null unique 'ab_key'" json:"abKey,omitempty"`
 	State           string `xorm:"not null 'state'" json:"state,omitempty"`
 	TmcClientNumber string `xorm:"not null unique 'tmc_client_number'" json:"tmcClientNumber,omitempty"`
-	Tag             string `xorm:" not null 'tag' " json:"-"`
+	// Tag             string `xorm:" not null 'tag' " json:"-"`
 }
 
 func (*Customer) TableName() string {

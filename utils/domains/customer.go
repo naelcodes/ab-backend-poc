@@ -15,7 +15,7 @@ func NewCustomerDomain(customer *models.Customer) *CustomerDomain {
 }
 
 func (domain *CustomerDomain) SetDefaults() {
-	domain.customer.Tag = "3"
+	//domain.customer.Tag = "3"
 	domain.customer.IdCountry = 40
 	domain.customer.IdCurrency = 550
 	domain.customer.AbKey = helpers.GenerateRandomString(15)

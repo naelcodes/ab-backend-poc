@@ -10,12 +10,11 @@ import (
 	CustomErrors "neema.co.za/rest/utils/errors"
 )
 
-const tag = "3"
-
 func (r *Repository) Count() (int64, error) {
 	logger.Info("Counting customers")
 
-	totalRowCount, err := r.Where("tag = ?", tag).Count(new(models.Customer))
+	customers := make([]*models.Customer, 0)
+	totalRowCount, err := r.FindAndCount(&customers)
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error counting customers: %v", err))
@@ -29,7 +28,7 @@ func (r *Repository) Count() (int64, error) {
 }
 func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO[[]*models.Customer], error) {
 
-	customerQuery := r.Where("tag = ?", tag)
+	customerQuery := r
 	customers := make([]*models.Customer, 0)
 
 	totalRowCount, err := r.Count()
@@ -74,7 +73,7 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO
 }
 
 func (r *Repository) GetById(id int) (*models.Customer, error) {
-	customerQuery := r.Where("tag = ?", tag)
+	customerQuery := r
 	customer := new(models.Customer)
 	has, err := customerQuery.ID(id).Get(customer)
 
