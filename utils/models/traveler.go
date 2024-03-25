@@ -11,7 +11,7 @@ type Traveler struct {
 	MobilePhone          string `xorm:"'mobile_phone'" json:"mobilePhone,omitempty"`
 	PassPortNumber       string `xorm:"'passport_number'" json:"passportNumber,omitempty"`
 	PassPortIssuedOn     string `xorm:"'passport_issued_on'" json:"passportIssuedOn,omitempty"`
-	PassPortExpiredOn    string `xorm:"'passport_expired_on'" json:"passportExpiredOn,omitempty"`
+	PassPortExpireOn     string `xorm:"'passport_expire_on'" json:"passportExpiredOn,omitempty"`
 	IdCitizenship        int    `xorm:"'id_citizenship'" json:"idCitizenship,omitempty"`
 	BirthDate            string `xorm:"'birth_date'" json:"birthDate,omitempty"`
 	MaritalStatus        string `xorm:"'marital_status'" json:"maritalStatus,omitempty"` //ab_marital_status

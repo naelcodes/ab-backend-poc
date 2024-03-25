@@ -14,9 +14,9 @@ func GetModule(dependencyManager *managers.DependencyManager) *Module {
 }
 
 func handleRoutes(api *Api) {
-	api.Get("/travelers", api.GetAllTravelersHandler)
-	api.Post("/travelers", api.CreateTravelerHandler)
-	api.Get("/travelers/:id", api.GetSingleTravelerHandler)
-	api.Put("/travelers/:id", api.UpdateTravelerHandler)
-	api.Delete("/travelers/:id", api.DeleteTravelerHandler)
+	api.Get("", api.GetAllTravelersHandler)
+	api.Post("", api.CreateTravelerHandler)
+	api.Get("/:id", api.GetSingleTravelerHandler)
+	api.Put("/:id", api.UpdateTravelerHandler)
+	api.Delete("/:id", api.DeleteTravelerHandler)
 }

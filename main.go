@@ -14,6 +14,7 @@ import (
 	ImputationModule "neema.co.za/rest/modules/imputation"
 	InvoiceModule "neema.co.za/rest/modules/invoice"
 	PaymentModule "neema.co.za/rest/modules/payment"
+	TravelerModule "neema.co.za/rest/modules/traveler"
 	App "neema.co.za/rest/utils/app"
 )
 
@@ -43,6 +44,7 @@ func main() {
 	paymentModule := PaymentModule.GetModule(dependencyManager)
 	bookingModule := BookingModule.GetModule(dependencyManager)
 	imputationModule := ImputationModule.GetModule(dependencyManager)
+	travelerModule := TravelerModule.GetModule(dependencyManager)
 
 	logger.Info(fmt.Sprintf("Dependencies Count: %v", len(dependencyManager.GetAll())))
 
@@ -53,5 +55,6 @@ func main() {
 	invoiceModule.App.Mount("", imputationModule.App)
 	routerV1.Mount("/invoices", invoiceModule.App)
 	routerV1.Mount("/payments", paymentModule.App)
+	routerV1.Mount("/travelers", travelerModule.App)
 
 }

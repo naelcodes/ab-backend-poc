@@ -11,7 +11,8 @@ func (api *Api) GetSingleTravelerHandler(c *fiber.Ctx) error {
 }
 
 func (api *Api) GetAllTravelersHandler(c *fiber.Ctx) error {
-	return nil
+	travelers, _ := api.GetAllTravelersService()
+	return c.JSON(travelers)
 }
 
 func (api *Api) UpdateTravelerHandler(c *fiber.Ctx) error {
