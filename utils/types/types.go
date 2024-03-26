@@ -7,9 +7,8 @@ type BaseEntity struct {
 }
 
 type GetQueryParams struct {
-	PageSize   *int    `query:"page-size"`
-	PageNumber *int    `query:"page"`
-	Embed      *string `query:"embed"`
+	PageSize   *int `query:"page-size"`
+	PageNumber *int `query:"page"`
 }
 
 type PayloadValidator interface {

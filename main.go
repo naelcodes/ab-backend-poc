@@ -9,11 +9,7 @@ import (
 	logger "neema.co.za/rest/utils/logger"
 	"neema.co.za/rest/utils/managers"
 
-	BookingModule "neema.co.za/rest/modules/booking"
 	CustomerModule "neema.co.za/rest/modules/customer"
-	ImputationModule "neema.co.za/rest/modules/imputation"
-	InvoiceModule "neema.co.za/rest/modules/invoice"
-	PaymentModule "neema.co.za/rest/modules/payment"
 	TravelerModule "neema.co.za/rest/modules/traveler"
 	App "neema.co.za/rest/utils/app"
 )
@@ -40,10 +36,6 @@ func main() {
 	dependencyManager := managers.NewDependencyManager()
 
 	customerModule := CustomerModule.GetModule(dependencyManager)
-	invoiceModule := InvoiceModule.GetModule(dependencyManager)
-	paymentModule := PaymentModule.GetModule(dependencyManager)
-	bookingModule := BookingModule.GetModule(dependencyManager)
-	imputationModule := ImputationModule.GetModule(dependencyManager)
 	travelerModule := TravelerModule.GetModule(dependencyManager)
 
 	logger.Info(fmt.Sprintf("Dependencies Count: %v", len(dependencyManager.GetAll())))
@@ -51,10 +43,6 @@ func main() {
 	//logger.Info(fmt.Sprintf("API V1 Base Path: %v", len(app.GetRoutes())))
 
 	routerV1.Mount("/customers", customerModule.App)
-	routerV1.Mount("/travel-items", bookingModule.App)
-	invoiceModule.App.Mount("", imputationModule.App)
-	routerV1.Mount("/invoices", invoiceModule.App)
-	routerV1.Mount("/payments", paymentModule.App)
 	routerV1.Mount("/travelers", travelerModule.App)
 
 }

@@ -28,7 +28,6 @@ func (r *Repository) Count() (int64, error) {
 }
 func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO[[]*models.Customer], error) {
 
-	customerQuery := r
 	customers := make([]*models.Customer, 0)
 
 	totalRowCount, err := r.Count()
@@ -47,14 +46,13 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO
 		if queryParams.PageNumber != nil && queryParams.PageSize != nil {
 			pageNumber = *queryParams.PageNumber
 			pageSize = *queryParams.PageSize
-			customerQuery.Limit(pageSize, pageNumber*pageSize)
 		}
 
 		logger.Info(fmt.Sprintf("PageNumber: %v", pageNumber))
 		logger.Info(fmt.Sprintf("PageSize: %v", pageSize))
 	}
 
-	err = customerQuery.Find(&customers)
+	err = r.Limit(pageSize, pageNumber*pageSize).Find(&customers)
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error getting customers: %v", err))
