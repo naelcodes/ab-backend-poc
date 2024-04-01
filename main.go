@@ -29,7 +29,7 @@ func main() {
 
 	app := App.Initialise()
 
-	defer app.Listen(fmt.Sprintf("localhost:%s", os.Getenv("APP_PORT")))
+	defer app.Listen(fmt.Sprintf("%s:%s", os.Getenv("APP_HOST"), os.Getenv("APP_PORT")))
 
 	routerV1 := app.Group(os.Getenv("API_V1_BASE_PATH"))
 
