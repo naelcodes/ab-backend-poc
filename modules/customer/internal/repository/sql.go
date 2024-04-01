@@ -102,3 +102,29 @@ func (r *Repository) Save(customer *models.Customer) (*models.Customer, error) {
 	logger.Info(fmt.Sprintf("Saved customer: %v", customer))
 	return r.GetById(customer.Id)
 }
+
+func (r *Repository) Update(id int, customer *models.Customer) error {
+
+	has, err := r.Exist(&models.Customer{
+		Id: id,
+	})
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error checking if customer exists: %v", err))
+		return CustomErrors.RepositoryError(fmt.Errorf("error checking if customer exists: %v", err))
+	}
+
+	if !has {
+		logger.Error(fmt.Sprintf("Customer with id %v not found", id))
+		return CustomErrors.NotFoundError(fmt.Errorf("customer with id %v not found", id))
+	}
+
+	_, err = r.ID(id).Update(customer)
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error updating customer: %v", err))
+		return CustomErrors.RepositoryError(fmt.Errorf("error updating customer record: %v", err))
+	}
+
+	return nil
+}

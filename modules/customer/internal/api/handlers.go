@@ -58,3 +58,17 @@ func (api *Api) CreateCustomerHandler(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(newCustomerDTO)
 
 }
+
+func (api *Api) UpdateCustomerHandler(c *fiber.Ctx) error {
+
+	customerID, _ := c.ParamsInt("id")
+	updateCustomerPayload := c.Locals("payload").(*payloads.UpdateCustomerPayload)
+	logger.Info(fmt.Sprintf("UpdateCustomerDTO: %v", updateCustomerPayload))
+
+	err := api.Service.UpdateCustomerService(customerID, *updateCustomerPayload)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error updating customer DTO: %v", err))
+		return err
+	}
+	return c.Status(fiber.StatusOK).JSON(fmt.Sprintf("Customer with id %v updated", customerID))
+}

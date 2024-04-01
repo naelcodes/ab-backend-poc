@@ -24,10 +24,10 @@ type Customer struct {
 	// OpeningBalanceDate string `xorm:"'opening_balance_date'" json:"openingBalanceDate,omitempty"`
 	// AvoidDeletion      bool   `xorm:"'avoid_deletion'" json:"avoidDeletion,omitempty"`
 	// IsEditable         bool   `xorm:"'is_editable'" json:"isEditable,omitempty"`
-	Alias string `xorm:"not null unique 'alias'" json:"alias,omitempty"`
+	Alias string `xorm:"unique 'alias'" json:"alias,omitempty"`
 	// AlreadyUsed        bool   `xorm:"'already_used'" json:"alreadyUsed,omitempty"`
-	AbKey           string `xorm:"not null unique 'ab_key'" json:"abKey,omitempty"`
-	TmcClientNumber string `xorm:"not null unique 'tmc_client_number'" json:"tmcClientNumber,omitempty"`
+	AbKey           string `xorm:"unique 'ab_key'" json:"abKey,omitempty"`
+	TmcClientNumber string `xorm:"unique 'tmc_client_number'" json:"tmcClientNumber,omitempty"`
 	// Category           string `xorm:"'category'" json:"category,omitempty"` // ab_customer_category
 	// TradeRegister      string `xorm:"'trade_register'" json:"tradeRegister,omitempty"`
 	// GeneralAccount     string `xorm:"'general_account'" json:"generalAccount,omitempty"`

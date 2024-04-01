@@ -19,5 +19,6 @@ func handleRoutes(api *Api) {
 	api.Get("", api.GetAllCustomerHandler)
 	api.Get("/:id", api.GetCustomerHandler)
 	api.Post("", middlewares.PayloadValidator(new(payloads.CreateCustomerPayload)), api.CreateCustomerHandler)
+	api.Put("/:id", middlewares.PayloadValidator(new(payloads.UpdateCustomerPayload)), api.UpdateCustomerHandler)
 
 }
