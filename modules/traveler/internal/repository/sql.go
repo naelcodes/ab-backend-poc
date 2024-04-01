@@ -100,3 +100,28 @@ func (r *Repository) Save(traveler *models.Traveler) (*models.Traveler, error) {
 	logger.Info(fmt.Sprintf("Saved traveler: %v", traveler))
 	return r.GetById(traveler.Id)
 }
+
+func (r *Repository) Update(id int, traveler *models.Traveler) (*models.Traveler, error) {
+	logger.Info(fmt.Sprintf("Updating traveler: %v", traveler))
+
+	has, err := r.Exist(&models.Traveler{Id: id})
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error checking if customer exists: %v", err))
+		return nil, CustomErrors.RepositoryError(fmt.Errorf("error checking if customer exists : %v", err))
+	}
+
+	if !has {
+		logger.Error(fmt.Sprintf("Traveler with id %v not found", id))
+		return nil, CustomErrors.RepositoryError(fmt.Errorf("traveler with id %v not found", id))
+	}
+
+	_, err = r.ID(id).Update(traveler)
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error updating traveler: %v", err))
+		return nil, CustomErrors.RepositoryError(fmt.Errorf("error updating traveler: %v", err))
+	}
+	return r.GetById(id)
+
+}

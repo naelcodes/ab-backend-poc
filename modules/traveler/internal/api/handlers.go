@@ -12,7 +12,7 @@ import (
 func (api *Api) CreateTravelerHandler(c *fiber.Ctx) error {
 	CreateTravelerPayload := c.Locals("payload").(*payloads.CreateTravelerPayload)
 
-	logger.Info(fmt.Sprintf("CreateTravelerDTO: %v", CreateTravelerPayload))
+	logger.Info(fmt.Sprintf("CreateTravelerPayload: %v", CreateTravelerPayload))
 
 	newTravelerRecord, err := api.CreateTravelerService(*CreateTravelerPayload)
 
@@ -49,7 +49,19 @@ func (api *Api) GetAllTravelersHandler(c *fiber.Ctx) error {
 }
 
 func (api *Api) UpdateTravelerHandler(c *fiber.Ctx) error {
-	return nil
+	travelerId, _ := c.ParamsInt("id")
+	UpdateTravelerPayload := c.Locals("payload").(*payloads.UpdateTravelerPayload)
+
+	logger.Info(fmt.Sprintf("UpdateTravelerPayload: %v", UpdateTravelerPayload))
+
+	updatedTraveler, err := api.UpdateTravelerService(travelerId, *UpdateTravelerPayload)
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error updating traveler: %v", err))
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(updatedTraveler)
 }
 
 func (api *Api) DeleteTravelerHandler(c *fiber.Ctx) error {
