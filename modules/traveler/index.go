@@ -3,6 +3,8 @@ package traveler
 import (
 	. "neema.co.za/rest/modules/traveler/internal/api"
 	"neema.co.za/rest/utils/managers"
+	"neema.co.za/rest/utils/middlewares"
+	"neema.co.za/rest/utils/payloads"
 )
 
 func GetModule(dependencyManager *managers.DependencyManager) *Module {
@@ -15,8 +17,8 @@ func GetModule(dependencyManager *managers.DependencyManager) *Module {
 
 func handleRoutes(api *Api) {
 	api.Get("", api.GetAllTravelersHandler)
-	api.Post("", api.CreateTravelerHandler)
-	api.Get("/:id", api.GetSingleTravelerHandler)
-	api.Put("/:id", api.UpdateTravelerHandler)
-	api.Delete("/:id", api.DeleteTravelerHandler)
+	api.Post("", middlewares.PayloadValidator(new(payloads.CreateTravelerPayload)), api.CreateTravelerHandler)
+	// api.Get("/:id", api.GetSingleTravelerHandler)
+	// api.Put("/:id", api.UpdateTravelerHandler)
+	// api.Delete("/:id", api.DeleteTravelerHandler)
 }

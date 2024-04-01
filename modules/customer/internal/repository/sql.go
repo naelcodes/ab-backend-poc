@@ -71,9 +71,9 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO
 }
 
 func (r *Repository) GetById(id int) (*models.Customer, error) {
-	customerQuery := r
+
 	customer := new(models.Customer)
-	has, err := customerQuery.ID(id).Get(customer)
+	has, err := r.ID(id).Get(customer)
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error getting customer: %v", err))

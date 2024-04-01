@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 
-	"neema.co.za/rest/utils/domains"
+	"neema.co.za/rest/utils/helpers"
 	"neema.co.za/rest/utils/logger"
 	"neema.co.za/rest/utils/models"
 	"neema.co.za/rest/utils/payloads"
@@ -23,8 +23,10 @@ func (s *Service) GetCustomerService(id int) (*models.Customer, error) {
 func (s *Service) CreateCustomerService(payload payloads.CreateCustomerPayload) (*models.Customer, error) {
 	logger.Info(fmt.Sprintf("Creating customer: %v", payload))
 
-	domain := domains.NewCustomerDomain(&payload.Customer)
-	domain.SetDefaults()
+	payload.Customer.IdCountry = 40
+	payload.Customer.IdCurrency = 550
+	// payload.Customer.IdGroup = 1
+	payload.Customer.AbKey = helpers.GenerateRandomString(15)
 
-	return s.Repository.Save(domain.GetCustomer())
+	return s.Repository.Save(&payload.Customer)
 }

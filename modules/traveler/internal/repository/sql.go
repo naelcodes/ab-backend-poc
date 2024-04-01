@@ -67,3 +67,36 @@ func (r *Repository) GetAll(queryParams *types.GetQueryParams) (*types.GetAllDTO
 
 	return &result, nil
 }
+
+func (r *Repository) GetById(id int) (*models.Traveler, error) {
+	logger.Info(fmt.Sprintf("Getting traveler: %v", id))
+
+	traveler := new(models.Traveler)
+	has, err := r.ID(id).Get(traveler)
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error getting traveler: %v", id))
+		return nil, CustomErrors.RepositoryError(fmt.Errorf("error getting traveler: %v", id))
+	}
+
+	if !has {
+		logger.Error(fmt.Sprintf("Traveler with id %v not found", id))
+		return nil, CustomErrors.RepositoryError(fmt.Errorf("traveler with id %v not found", id))
+	}
+
+	logger.Info(fmt.Sprintf("Found traveler: %v", traveler))
+	return traveler, nil
+}
+
+func (r *Repository) Save(traveler *models.Traveler) (*models.Traveler, error) {
+	logger.Info(fmt.Sprintf("Saving traveler: %v", traveler))
+
+	_, err := r.Insert(traveler)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error saving traveler: %v", err))
+		return nil, CustomErrors.RepositoryError(fmt.Errorf("error saving traveler: %v", err))
+	}
+
+	logger.Info(fmt.Sprintf("Saved traveler: %v", traveler))
+	return r.GetById(traveler.Id)
+}
