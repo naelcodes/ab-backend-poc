@@ -13,3 +13,7 @@ func (s *Service) GetAllTravelersService(queryParams *types.GetQueryParams) (*ty
 func (s *Service) CreateTravelerService(payload payloads.CreateTravelerPayload) (*models.Traveler, error) {
 	return s.Repository.Save(&payload.Traveler)
 }
+
+func (s *Service) GetTravelerByIdService(id int) (*models.Traveler, error) {
+	return s.Repository.GetById(id)
+}

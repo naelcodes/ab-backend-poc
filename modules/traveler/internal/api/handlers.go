@@ -25,8 +25,15 @@ func (api *Api) CreateTravelerHandler(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(newTravelerRecord)
 }
 
-func (api *Api) GetSingleTravelerHandler(c *fiber.Ctx) error {
-	return nil
+func (api *Api) GetTravelerByIdHandler(c *fiber.Ctx) error {
+	id, _ := c.ParamsInt("id")
+
+	traveler, err := api.GetTravelerByIdService(id)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error getting traveler: %v", err))
+		return err
+	}
+	return c.Status(fiber.StatusOK).JSON(traveler)
 }
 
 func (api *Api) GetAllTravelersHandler(c *fiber.Ctx) error {
