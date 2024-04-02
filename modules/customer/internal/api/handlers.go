@@ -72,3 +72,13 @@ func (api *Api) UpdateCustomerHandler(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(fmt.Sprintf("Customer with id %v updated", customerID))
 }
+
+func (api *Api) DeleteCustomerHandler(c *fiber.Ctx) error {
+	customerID, _ := c.ParamsInt("id")
+	err := api.Service.DeleteCustomerService(customerID)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error deleting customer DTO: %v", err))
+		return err
+	}
+	return c.Status(fiber.StatusOK).JSON(fmt.Sprintf("Customer with id %v deleted", customerID))
+}

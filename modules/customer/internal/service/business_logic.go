@@ -32,6 +32,10 @@ func (s *Service) CreateCustomerService(payload payloads.CreateCustomerPayload) 
 }
 
 func (s *Service) UpdateCustomerService(id int, payload payloads.UpdateCustomerPayload) error {
-	logger.Info(fmt.Sprintf("Updating customer: %v", payload))
+
 	return s.Repository.Update(id, &payload.Customer)
+}
+
+func (s *Service) DeleteCustomerService(id int) error {
+	return s.Repository.Delete(id)
 }

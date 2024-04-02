@@ -128,3 +128,29 @@ func (r *Repository) Update(id int, customer *models.Customer) error {
 
 	return nil
 }
+
+func (r *Repository) Delete(id int) error {
+	logger.Info(fmt.Sprintf("Deleting customer: %v", id))
+
+	has, err := r.Exist(&models.Customer{
+		Id: id,
+	})
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error checking if customer exists: %v", err))
+		return CustomErrors.RepositoryError(fmt.Errorf("error checking if customer exists: %v", err))
+	}
+
+	if !has {
+		logger.Error(fmt.Sprintf("Customer with id %v not found", id))
+		return CustomErrors.NotFoundError(fmt.Errorf("customer with id %v not found", id))
+	}
+
+	_, err = r.ID(id).Delete(&models.Customer{})
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error deleting customer: %v", err))
+		return CustomErrors.RepositoryError(fmt.Errorf("error deleting customer record: %v", err))
+	}
+	return nil
+}
