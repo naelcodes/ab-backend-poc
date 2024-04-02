@@ -65,5 +65,14 @@ func (api *Api) UpdateTravelerHandler(c *fiber.Ctx) error {
 }
 
 func (api *Api) DeleteTravelerHandler(c *fiber.Ctx) error {
-	return nil
+
+	travelerId, _ := c.ParamsInt("id")
+	err := api.DeleteTravelerService(travelerId)
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error deleting traveler: %v", err))
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fmt.Sprintf("Traveler with id %v deleted", travelerId))
 }

@@ -21,3 +21,7 @@ func (s *Service) GetTravelerByIdService(id int) (*models.Traveler, error) {
 func (s *Service) UpdateTravelerService(id int, payload payloads.UpdateTravelerPayload) (*models.Traveler, error) {
 	return s.Repository.Update(id, &payload.Traveler)
 }
+
+func (s *Service) DeleteTravelerService(id int) error {
+	return s.Repository.Delete(id)
+}

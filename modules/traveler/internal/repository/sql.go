@@ -125,3 +125,29 @@ func (r *Repository) Update(id int, traveler *models.Traveler) (*models.Traveler
 	return r.GetById(id)
 
 }
+
+func (r *Repository) Delete(id int) error {
+	logger.Info(fmt.Sprintf("Deleting traveler: %v", id))
+
+	has, err := r.Exist(&models.Traveler{Id: id})
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error checking if traveler exists: %v", err))
+		return CustomErrors.RepositoryError(fmt.Errorf("error checking if traveler exists : %v", err))
+	}
+
+	if !has {
+		logger.Error(fmt.Sprintf("Traveler with id %v not found", id))
+		return CustomErrors.NotFoundError(fmt.Errorf("traveler with id %v not found", id))
+	}
+
+	_, err = r.ID(id).Delete(&models.Traveler{})
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error deleting traveler: %v", err))
+		return CustomErrors.RepositoryError(fmt.Errorf("error deleting traveler: %v", err))
+	}
+
+	return nil
+
+}
